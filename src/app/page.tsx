@@ -176,7 +176,7 @@ export default function Home() {
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed">
-          KamarHub adalah asisten digital cerdas yang mengurus operasional kos Anda 24 jam nonstop. Cek kamar kosong secara visual, tagihan terbit otomatis, pengingat WhatsApp santun yang tepat waktu, dan portal mandiri anak kos tanpa perlu download aplikasi.
+          KamarHub adalah asisten digital yang mengurus operasional kos Anda. Cek kamar kosong, tagihan terbit otomatis, pengingat WhatsApp yang tepat waktu, dan portal mandiri anak kos.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
@@ -192,7 +192,7 @@ export default function Home() {
             className="w-full sm:w-auto px-8 py-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-base transition flex items-center justify-center gap-2"
           >
             <Smartphone className="w-5 h-5 text-blue-400" />
-            Lihat Tampilan Portal Anak Kos
+            Portal Anak Kos
           </Link>
         </div>
 
