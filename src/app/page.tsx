@@ -35,8 +35,8 @@ export default function Home() {
               <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                 <Building2 className="w-5 h-5" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white">
-                Kamar<span className="text-blue-500">Hub</span>
+              <span className="text-xl font-bold tracking-tight text-blue-500">
+                KamarHub
               </span>
             </Link>
 
@@ -506,7 +506,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4 text-blue-500" />
-            <span className="font-semibold text-slate-300">KamarHub</span> — Platform Otomasi Kos & Properti Multi-Tenant.
+            <span className="font-semibold text-blue-500">KamarHub</span> — Platform Otomasi Kos & Properti Multi-Tenant.
           </div>
           <div>
             © 2026 KamarHub. Seluruh hak cipta dilindungi undang-undang.
