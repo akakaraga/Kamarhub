@@ -38,8 +38,8 @@ export default function RenterPortalLoginPage() {
           <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-bold">
             <Building2 className="w-4 h-4" />
           </div>
-          <span className="font-bold tracking-tight text-white text-lg">
-            Kamar<span className="text-blue-500">Hub</span>
+          <span className="font-bold tracking-tight text-blue-500 text-lg">
+            KamarHub
           </span>
         </div>
         <span className="text-[11px] font-semibold bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/30">
