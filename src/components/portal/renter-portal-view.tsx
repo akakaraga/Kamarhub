@@ -83,9 +83,7 @@ export function RenterPortalView({
       {/* Main Container (Mobile Form Factor) */}
       <main className="max-w-lg mx-auto p-4 space-y-4">
         {/* Welcome & Room Card */}
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-3xl shadow-xl shadow-blue-500/20 relative overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
-
+        <div className="bg-blue-600 text-white p-5 rounded-3xl shadow-lg relative overflow-hidden">
           <div className="relative space-y-3">
             <div className="flex items-start justify-between">
               <div>

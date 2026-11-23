@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
       {/* Top Notification Bar */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-700 text-white text-xs font-medium py-2 px-4 text-center tracking-wide">
+      <div className="bg-blue-600 text-white text-xs font-medium py-2 px-4 text-center tracking-wide">
         🚀 <span className="font-bold">KamarHub v2.0 Telah Rilis:</span> Nikmati otomasi WhatsApp reminder, portal anak kos tanpa unduh app, & analitik arus kas real-time!
       </div>
 
@@ -76,7 +76,7 @@ export default function Home() {
       <section className="flex-1 flex flex-col justify-center items-center px-6 pt-20 pb-16 text-center max-w-5xl mx-auto">
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.15]">
           Otomatiskan Penagihan Kos. <br />
-          <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">
+          <span className="text-blue-500">
             Hilangkan Stres Menagih Sewa.
           </span>
         </h1>
@@ -246,7 +246,7 @@ export default function Home() {
             </div>
 
             {/* Plan: Pro (Most Popular) */}
-            <div className="p-8 rounded-2xl bg-gradient-to-b from-blue-900/30 to-slate-900 border-2 border-blue-500 shadow-2xl shadow-blue-500/10 flex flex-col justify-between relative">
+            <div className="p-8 rounded-2xl bg-slate-900 border-2 border-blue-500 shadow-xl flex flex-col justify-between relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-blue-600 text-white font-bold text-[10px] uppercase tracking-wider shadow">
                 Paling Diminati
               </div>
@@ -475,7 +475,7 @@ export default function Home() {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="py-20 border-t border-slate-800/80 bg-gradient-to-b from-slate-900 to-slate-950 text-center px-6">
+      <section className="py-20 border-t border-slate-800/80 bg-slate-900 text-center px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Siap Mengubah Manajemen Kos Anda Menjadi Otomatis?
