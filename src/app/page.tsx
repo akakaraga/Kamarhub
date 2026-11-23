@@ -41,7 +41,7 @@ export default function Home() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
-              <a href="#fitur" className="hover:text-white transition">Fitur Utama</a>
+              <a href="#fitur" className="hover:text-white transition">Fitur</a>
               <a href="#harga" className="hover:text-white transition">Paket Harga</a>
               <a href="#faq" className="hover:text-white transition">FAQ</a>
             </nav>
@@ -353,7 +353,7 @@ export default function Home() {
       <section id="komparasi" className="py-20 border-t border-slate-800/80 bg-slate-900/40">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold text-white tracking-tight">Tabel Perbandingan Fitur Paket</h3>
+            <h3 className="text-2xl font-bold text-white tracking-tight">Tabel Perbandingan Paket</h3>
             <p className="text-slate-400 text-xs mt-2">Pilih solusi yang paling efisien untuk kebutuhan operasional kos Anda.</p>
           </div>
 
@@ -495,7 +495,7 @@ export default function Home() {
               href="/login"
               className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-slate-300 font-semibold text-sm transition"
             >
-              Masuk ke Dasbor Admin
+              Masuk ke Dashboard Admin
             </Link>
           </div>
         </div>
