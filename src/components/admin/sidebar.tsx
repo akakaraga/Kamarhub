@@ -43,8 +43,8 @@ export function AdminSidebar({ companyName = "Kos Hub", subscriptionPlan = "free
           <Building2 className="w-5 h-5" />
         </div>
         <div className="flex flex-col">
-          <span className="text-base font-bold text-white tracking-tight flex items-center gap-1">
-            Kamar<span className="text-blue-500">Hub</span>
+          <span className="text-base font-bold text-blue-500 tracking-tight flex items-center gap-1">
+            KamarHub
           </span>
           <span className="text-[10px] text-slate-400 font-medium truncate max-w-[140px]">
             {companyName}
