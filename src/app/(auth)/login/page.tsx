@@ -113,8 +113,8 @@ export default function LoginPage() {
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
             <Building2 className="w-6 h-6" />
           </div>
-          <span className="text-2xl font-bold tracking-tight text-slate-900">
-            Kamar<span className="text-blue-600">Hub</span>
+          <span className="text-2xl font-bold tracking-tight text-blue-600">
+            KamarHub
           </span>
         </div>
         <h2 className="text-center text-xl font-semibold tracking-tight text-slate-700">
