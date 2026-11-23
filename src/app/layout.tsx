@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://kamarhub.com"),
   title: {
-    default: "KamarHub - Aplikasi Manajemen Kos & Penagihan Sewa Otomatis No. 1 di Indonesia",
+    default: "KamarHub",
     template: "%s | KamarHub",
   },
   description:
