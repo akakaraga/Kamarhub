@@ -282,7 +282,7 @@ export default async function DashboardPage() {
                     <div 
                       className={`w-full max-w-[42px] rounded-t-lg transition-all duration-300 ${
                         item.amount > 0 
-                          ? "bg-gradient-to-t from-blue-600 to-indigo-500 group-hover:from-blue-700 group-hover:to-indigo-600 shadow-sm shadow-blue-500/20" 
+                          ? "bg-blue-600 group-hover:bg-blue-700 shadow-sm" 
                           : "bg-slate-100"
                       }`}
                       style={{ height: `${heightPercent}%` }}
