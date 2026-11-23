@@ -43,7 +43,6 @@ export default function Home() {
             <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
               <a href="#fitur" className="hover:text-white transition">Fitur Utama</a>
               <a href="#harga" className="hover:text-white transition">Paket Harga</a>
-              <a href="#komparasi" className="hover:text-white transition">Perbandingan</a>
               <a href="#faq" className="hover:text-white transition">FAQ</a>
             </nav>
           </div>
@@ -75,11 +74,6 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center px-6 pt-20 pb-16 text-center max-w-5xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-8">
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-          Platform B2B SaaS Manajemen Properti Kos Terlengkap
-        </div>
-
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.15]">
           Otomatiskan Penagihan Kos. <br />
           <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-300 bg-clip-text text-transparent">
@@ -104,7 +98,7 @@ export default function Home() {
             className="w-full sm:w-auto px-8 py-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-base transition flex items-center justify-center gap-2"
           >
             <Smartphone className="w-5 h-5 text-blue-400" />
-            Coba Portal Anak Kos
+            Portal Anak Kos
           </Link>
         </div>
 
@@ -513,11 +507,6 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4 text-blue-500" />
             <span className="font-semibold text-slate-300">KamarHub</span> — Platform Otomasi Kos & Properti Multi-Tenant.
-          </div>
-          <div className="flex items-center gap-6">
-            <span>Next.js 15 App Router</span>
-            <span>PostgreSQL RLS</span>
-            <span>Fonnte WhatsApp API</span>
           </div>
           <div>
             © 2026 KamarHub. Seluruh hak cipta dilindungi undang-undang.
