@@ -8,25 +8,24 @@ import {
   Phone, 
   Receipt, 
   Users, 
-  Smartphone,
-  Check,
-  HelpCircle,
-  Clock,
-  Sparkles,
-  BarChart3,
-  Wrench,
-  Lock,
-  ChevronDown,
-  CalendarCheck,
-  FileText,
-  HeartHandshake,
-  BadgeCheck,
-  TrendingUp,
-  Banknote,
-  Smile,
-  Shield,
-  Layers,
-  CheckCircle
+  Smartphone, 
+  Check, 
+  HelpCircle, 
+  Clock, 
+  Sparkles, 
+  BarChart3, 
+  Wrench, 
+  Lock, 
+  TrendingUp, 
+  Banknote, 
+  Smile, 
+  Shield, 
+  Layers, 
+  ChevronRight,
+  Send,
+  MessageSquare,
+  FileCheck2,
+  CalendarCheck2
 } from "lucide-react";
 
 export default function Home() {
@@ -42,7 +41,7 @@ export default function Home() {
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.9",
-          "ratingCount": "142"
+          "ratingCount": "156"
         },
         "offers": {
           "@type": "Offer",
@@ -50,7 +49,7 @@ export default function Home() {
           "priceCurrency": "IDR",
           "description": "Paket Starter Gratis Selamanya untuk hingga 10 kamar kos"
         },
-        "description": "Aplikasi manajemen kos-kosan dan kontrakan online terbaik di Indonesia. Otomasi penagihan sewa bulanan lewat WhatsApp, cek status kamar kosong, kuitansi digital instan, dan portal anak kos tanpa unduh aplikasi."
+        "description": "Aplikasi manajemen kos dan kontrakan online terbaik di Indonesia. Otomatiskan penagihan sewa bulanan lewat WhatsApp, cek status kamar kosong, kuitansi digital instan, dan portal anak kos tanpa unduh aplikasi."
       },
       {
         "@type": "FAQPage",
@@ -60,7 +59,7 @@ export default function Home() {
             "name": "Apakah anak kos wajib mengunduh aplikasi di Play Store atau App Store?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Tidak perlu sama sekali. KamarHub menggunakan teknologi web mobile-first yang ringan. Anak kos cukup membuka tautan dari browser smartphone mereka dan login menggunakan nomor WhatsApp aktif tanpa perlu install aplikasi yang membebani memori HP."
+              "text": "Tidak perlu sama sekali. KamarHub menggunakan teknologi web mobile-first yang sangat ringan. Anak kos cukup membuka link melalui browser smartphone mereka dan langsung login menggunakan nomor WhatsApp aktif tanpa perlu install aplikasi yang membebani memori HP."
             }
           },
           {
@@ -68,7 +67,7 @@ export default function Home() {
             "name": "Bagaimana cara kerja pengingat tagihan sewa otomatis lewat WhatsApp?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sistem KamarHub secara otomatis mengirimkan pesan pengingat tagihan dengan bahasa yang sopan dan santun pada H-3 sebelum tanggal jatuh tempo, tepat pada Hari H, serta pemberitahuan ramah jika pembayaran terlambat."
+              "text": "Sistem KamarHub secara otomatis mengirimkan pesan pengingat tagihan dengan bahasa yang ramah dan sopan pada H-3 sebelum tanggal jatuh tempo, tepat pada Hari H, serta pemberitahuan santun jika pembayaran melewati batas jatuh tempo."
             }
           },
           {
@@ -108,9 +107,9 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Top Friendly Announcement Bar */}
-      <div className="bg-blue-600 text-white text-xs font-medium py-2.5 px-4 text-center tracking-wide">
-        ⚡ <strong>Kelola Kos Lebih Santai:</strong> Tagihan otomatis terkirim via WhatsApp, uang sewa masuk tepat waktu tanpa drama menagih!
+      {/* Top Banner */}
+      <div className="bg-blue-600 text-white text-xs font-semibold py-2.5 px-4 text-center tracking-wide">
+        ⚡ <strong>Solusi Cerdas Juragan Kos:</strong> Uang sewa masuk tepat waktu, bebas dari rasa canggung saat menagih penghuni!
       </div>
 
       {/* Navbar Header */}
@@ -169,22 +168,23 @@ export default function Home() {
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.18]">
-          Ubah Bisnis Kos Anda Jadi Serba Otomatis. <br />
+          Kelola Banyak Pintu Kos Tanpa Lelah. <br />
           <span className="text-blue-500">
-            Uang Sewa Masuk Tepat Waktu, Bebas Drama Menagih.
+            Tagihan Masuk Otomatis, Kamar Terisi Lebih Cepat.
           </span>
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed">
-          KamarHub adalah asisten digital yang mengurus operasional kos Anda. Cek kamar kosong, tagihan terbit otomatis, pengingat WhatsApp yang tepat waktu, dan portal mandiri anak kos.
+          Tinggalkan buku catatan berantakan dan rasa sungkan saat menagih uang sewa. <strong>KamarHub</strong> adalah asisten digital yang membantu Anda memantau kamar kosong secara visual, mengirimkan pengingat WhatsApp otomatis yang santun, memverifikasi bukti transfer, hingga menerbitkan kuitansi digital resmi.
         </p>
 
+        {/* Hero CTAs */}
         <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <Link
             href="/register"
             className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-base shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2"
           >
-            Mulai Coba Gratis Sekarang
+            Mulai Gratis Sekarang (Siap dalam 2 Menit)
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
@@ -192,19 +192,19 @@ export default function Home() {
             className="w-full sm:w-auto px-8 py-4 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-base transition flex items-center justify-center gap-2"
           >
             <Smartphone className="w-5 h-5 text-blue-400" />
-            Portal Anak Kos
+            Coba Portal Mandiri Anak Kos
           </Link>
         </div>
 
-        {/* Micro-Trust Badges */}
+        {/* UX Micro-Trust Indicators */}
         <div className="mt-12 pt-8 border-t border-slate-800/80 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-medium text-slate-400">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            Gratis 100% Selamanya untuk Kos Pemula
+            100% Gratis Selamanya untuk Kos Pemula
           </div>
           <div className="flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-sky-400" />
-            Anak Kos Tanpa Unduh Aplikasi
+            Anak Kos Masuk Tanpa Download Aplikasi
           </div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-blue-400" />
@@ -219,22 +219,22 @@ export default function Home() {
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-black text-blue-500">98%</div>
             <div className="text-xs sm:text-sm font-semibold text-white">Pembayaran Tepat Waktu</div>
-            <p className="text-[11px] text-slate-400">Pengingat WhatsApp otomatis mencegah anak kos lupa jatuh tempo</p>
+            <p className="text-[11px] text-slate-400">Pengingat WhatsApp terjadwal otomatis mencegah anak kos terlambat bayar</p>
           </div>
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-black text-emerald-400">0 Jam</div>
             <div className="text-xs sm:text-sm font-semibold text-white">Waktu Terbuang Menagih</div>
-            <p className="text-[11px] text-slate-400">Sistem bekerja otomatis, Anda terbebas dari rasa canggung menagih</p>
+            <p className="text-[11px] text-slate-400">Sistem bekerja otomatis, Anda bebas dari rasa canggung atau sungkan</p>
           </div>
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-black text-purple-400">3 Detik</div>
-            <div className="text-xs sm:text-sm font-semibold text-white">Cek Ketersediaan Kamar</div>
-            <p className="text-[11px] text-slate-400">Peta visual warna hijau, merah, kuning langsung terlihat di HP</p>
+            <div className="text-xs sm:text-sm font-semibold text-white">Cek Status Semua Kamar</div>
+            <p className="text-[11px] text-slate-400">Peta visual warna hijau, merah, kuning langsung terlihat jelas di HP</p>
           </div>
           <div className="space-y-1">
             <div className="text-3xl sm:text-4xl font-black text-amber-400">100%</div>
             <div className="text-xs sm:text-sm font-semibold text-white">Kuitansi Digital Otomatis</div>
-            <p className="text-[11px] text-slate-400">Bukti pembayaran resmi terbit seketika tanpa repot tulis kertas</p>
+            <p className="text-[11px] text-slate-400">Bukti lunas resmi terbit instan begitu transfer disetujui, siap unduh / cetak</p>
           </div>
         </div>
       </section>
@@ -243,9 +243,9 @@ export default function Home() {
       <section id="keunggulan" className="py-20 bg-slate-950">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">TRANSFORMASI BISNIS KOS ANDA</h2>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Tinggalkan Cara Lama yang Menguras Tenaga</h3>
-            <p className="text-slate-400 text-sm mt-3">Saatnya beralih ke manajemen kos modern yang rapi, transparan, dan membuat hidup Anda jauh lebih tenang.</p>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">KENAPA JURAGAN KOS MEMILIH KAMARHUB?</h2>
+            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Tinggalkan Cara Lama yang Menguras Waktu & Energi</h3>
+            <p className="text-slate-400 text-sm mt-3">Bisnis kos seharusnya memberikan penghasilan pasif yang menenangkan, bukan menambah beban pikiran sehari-hari.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -258,23 +258,23 @@ export default function Home() {
               <ul className="space-y-3.5 text-xs sm:text-sm text-slate-400 leading-relaxed">
                 <li className="flex items-start gap-3">
                   <span className="text-rose-400 font-bold text-base">•</span>
-                  <span><strong>Sering lupa tanggal sewa:</strong> Anak kos menunggak berminggu-minggu karena tidak ada yang mengingatkan tepat waktu.</span>
+                  <span><strong>Sering lupa tanggal sewa:</strong> Anak kos menunggak berminggu-minggu karena Anda lupa mengecek tanggal jatuh tempo satu per satu.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-rose-400 font-bold text-base">•</span>
-                  <span><strong>Sungkan & canggung menagih:</strong> Mengetuk pintu atau chat secara personal terasa tidak enak hati dan merusak keakraban.</span>
+                  <span><strong>Sungkan & canggung menagih:</strong> Mengetuk pintu kamar atau chat pribadi sering terasa tidak enak hati dan merusak keakraban.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-rose-400 font-bold text-base">•</span>
-                  <span><strong>Catatan di buku sering hilang:</strong> Kuitansi kertas tercecer, sobek, atau nominal pembayaran yang diperdebatkan.</span>
+                  <span><strong>Catatan di buku sering tercecer:</strong> Kuitansi kertas hilang, basah, atau nominal tagihan yang diperdebatkan saat pindah.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-rose-400 font-bold text-base">•</span>
-                  <span><strong>Galeri HP penuh struk transfer:</strong> Bingung memeriksa bukti transfer palsu vs asli dan harus login m-banking berkali-kali.</span>
+                  <span><strong>Galeri HP penuh bukti transfer:</strong> Repot mencocokkan struk mutasi bank satu per satu secara manual.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-rose-400 font-bold text-base">•</span>
-                  <span><strong>Laporan komplain tenggelam:</strong> Aduan AC bocor atau lampu mati terlewat di obrolan chat pribadi hingga penghuni kecewa.</span>
+                  <span><strong>Komplain fasilitas tenggelam:</strong> Aduan AC bocor atau lampu mati terlewat di antara ribuan chat WhatsApp pribadi.</span>
                 </li>
               </ul>
             </div>
@@ -288,23 +288,23 @@ export default function Home() {
               <ul className="space-y-3.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Tagihan Otomatis H-7:</strong> Tagihan sewa bulanan dibuat otomatis oleh sistem tanpa perlu Anda hitung manual.</span>
+                  <span><strong>Tagihan Otomatis H-7:</strong> Tagihan bulanan langsung dibuat oleh sistem lengkap dengan rincian biaya sewa dan denda jika ada.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>WhatsApp Bot Ramah & Santun:</strong> Notifikasi pengingat dikirim oleh sistem pada H-3, Hari-H, dan H+1 tanpa rasa canggung.</span>
+                  <span><strong>WhatsApp Bot Ramah & Santun:</strong> Pengingat otomatis dikirim pada H-3, Hari-H, dan H+1 tanpa rasa canggung atau tersinggung.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Kuitansi Resmi Digital Terbit Seketika:</strong> Tersimpan aman di cloud dan siap dicetak atau diunduh kapanpun dibutuhkan.</span>
+                  <span><strong>Kuitansi Resmi Digital Otomatis:</strong> Langsung terbit saat pembayaran disetujui, tersimpan aman di cloud selamanya.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Portal Verifikasi 1 Klik:</strong> Anak kos upload bukti transfer di portalnya, Anda cukup klik "Terima" untuk melunasi tagihan.</span>
+                  <span><strong>Verifikasi Bukti Bayar 1 Klik:</strong> Anak kos upload foto bukti bayar di portal, Anda cukup verifikasi dengan sekali klik.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Pusat Komplain Fasilitas Rapi:</strong> Semua laporan kerusakan tersimpan rapi beserta foto, Anda tinggal menugaskan teknisi.</span>
+                  <span><strong>Pusat Tiket Komplain Terpusat:</strong> Keluhan kerusakan fasilitas tercatat rapi beserta foto, Anda tinggal menugaskan teknisi.</span>
                 </li>
               </ul>
             </div>
@@ -316,9 +316,9 @@ export default function Home() {
       <section id="fitur" className="py-20 border-t border-slate-800/60 bg-slate-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">FITUR LENGKAP</h2>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Semua Solusi Pengelolaan Kos dalam Satu Layar</h3>
-            <p className="text-slate-400 text-sm mt-3">Dirancang khusus sesuai kebiasaan dan alur operasional kos-kosan di Indonesia.</p>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">FITUR LENGKAP & PRAKTIS</h2>
+            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Semua Kebutuhan Pengelolaan Kos dalam Satu Layar</h3>
+            <p className="text-slate-400 text-sm mt-3">Dibangun khusus mengikuti alur operasional bisnis kos nyata di Indonesia.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -330,11 +330,11 @@ export default function Home() {
                 </div>
                 <h4 className="text-lg font-bold text-white">Visual Grid Status Kamar</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Ketahui kondisi seluruh kamar dalam hitungan detik. Warna <strong>Hijau</strong> untuk kamar kosong yang siap dipasarkan, <strong>Merah</strong> untuk kamar terisi aktif, dan <strong>Kuning</strong> untuk unit dalam perbaikan.
+                  Ketahui kondisi seluruh kamar dalam hitungan detik. Warna <strong>Hijau</strong> untuk kamar kosong siap huni, <strong>Merah</strong> untuk kamar terisi sewa aktif, dan <strong>Kuning</strong> untuk unit dalam perbaikan.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-slate-900 text-[11px] font-semibold text-blue-400 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Cek okupansi real-time
+                <Check className="w-3.5 h-3.5" /> Cek okupansi kos secara real-time
               </div>
             </div>
 
@@ -350,7 +350,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-slate-900 text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Nomor kuitansi unik otomatis
+                <Check className="w-3.5 h-3.5" /> Nomor kuitansi resmi otomatis
               </div>
             </div>
 
@@ -362,11 +362,11 @@ export default function Home() {
                 </div>
                 <h4 className="text-lg font-bold text-white">Pengingat WhatsApp yang Santun</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  KamarHub mengirimkan pesan WhatsApp pengingat dengan tata bahasa yang sangat sopan dan profesional pada H-3, Hari-H jatuh tempo, dan peringatan keterlambatan sewa.
+                  KamarHub mengirimkan pesan WhatsApp pengingat dengan bahasa yang sopan dan profesional pada H-3, Hari-H jatuh tempo, dan peringatan keterlambatan sewa tanpa perlu Anda ketik manual.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-slate-900 text-[11px] font-semibold text-purple-400 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Bebas canggung menagih
+                <Check className="w-3.5 h-3.5" /> Menagih tanpa rasa canggung
               </div>
             </div>
 
@@ -376,7 +376,7 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-sky-600/10 text-sky-400 flex items-center justify-center font-bold text-xl">
                   <Smartphone className="w-6 h-6" />
                 </div>
-                <h4 className="text-lg font-bold text-white">Portal Mandiri Anak Kos</h4>
+                <h4 className="text-lg font-bold text-white">Portal Mandiri Khusus Anak Kos</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Anak kos tidak perlu download aplikasi berat di HP. Cukup buka tautan web di browser smartphone untuk melihat rincian tagihan, upload foto struk transfer, dan unduh kuitansi resmi.
                 </p>
@@ -414,7 +414,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-slate-900 text-[11px] font-semibold text-amber-400 flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Standar keamanan data perbankan
+                <Check className="w-3.5 h-3.5" /> Standar privasi perbankan
               </div>
             </div>
           </div>
@@ -425,7 +425,7 @@ export default function Home() {
       <section id="cara-kerja" className="py-20 border-t border-slate-800/80 bg-slate-950">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">SANGAT PRAKTIS</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">LANGKAH MUDAH & PRAKTIS</h2>
             <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Mulai Otomasi Kos Anda dalam 3 Langkah</h3>
             <p className="text-slate-400 text-sm mt-3">Tidak perlu keahlian teknis rumit. Siapapun bisa mulai mengoperasikan KamarHub dalam waktu kurang dari 3 menit.</p>
           </div>
@@ -483,7 +483,7 @@ export default function Home() {
       <section id="harga" className="py-24 border-t border-slate-800/80 bg-slate-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">PAKET HARGA INVESTASI</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">PAKET HARGA TRANSPARAN</h2>
             <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Investasi Sangat Hemat, Nilai Balik Berlipat</h3>
             <p className="text-slate-400 text-sm mt-3">Mulai secara gratis sekarang juga. Anda bisa upgrade kapanpun saat kapasitas kamar kos Anda bertambah.</p>
           </div>
