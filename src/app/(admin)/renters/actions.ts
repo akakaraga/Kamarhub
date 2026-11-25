@@ -31,14 +31,11 @@ export async function createRenterAccount(formData: FormData) {
   const emergencyContact = formData.get("emergencyContact") as string;
   const ktpFile = formData.get("ktpFile") as File | null;
 
-  // Optional contract & billing fields
+  // Optional contract fields
   const roomId = formData.get("roomId") as string | null;
   const startDate = formData.get("startDate") as string | null;
   const endDate = formData.get("endDate") as string | null;
   const depositAmount = Number(formData.get("depositAmount")) || 0;
-  const firstInvoiceDueDate = (formData.get("firstInvoiceDueDate") as string | null) || startDate;
-  const generateFirstInvoice = formData.get("generateFirstInvoice") !== "false" && formData.get("generateFirstInvoice") !== "off";
-  const initialAdditionalFee = Number(formData.get("initialAdditionalFee")) || 0;
 
   if (!fullName || fullName.trim() === "") {
     return { error: "Nama lengkap anak kos wajib diisi." };
@@ -55,7 +52,7 @@ export async function createRenterAccount(formData: FormData) {
     }
 
     const { data: room, error: roomError } = await (supabase.from("rooms") as any)
-      .select("status, room_number")
+      .select("status, room_number, base_price")
       .eq("id", roomId)
       .eq("tenant_id", user.id)
       .single();
@@ -131,41 +128,44 @@ export async function createRenterAccount(formData: FormData) {
       .eq("id", roomId)
       .eq("tenant_id", user.id);
 
-    // If initial invoice generation is enabled, create first invoice with the owner-configured due date
-    if (generateFirstInvoice && firstInvoiceDueDate) {
+    // Pengaturan Waktu & Jadwal Tagihan Pertama yang Ditetapkan Pemilik
+    const firstInvoiceDueDate = (formData.get("firstInvoiceDueDate") as string) || startDate;
+    const generateFirstInvoice = 
+      formData.get("generateFirstInvoice") === "on" || 
+      formData.get("generateFirstInvoice") === "true";
+
+    if (generateFirstInvoice && contract) {
       const { data: roomData } = await (supabase.from("rooms") as any)
         .select("base_price")
         .eq("id", roomId)
-        .eq("tenant_id", user.id)
         .single();
 
-      const roomFee = roomData ? Number(roomData.base_price) : 0;
-      const totalAmount = roomFee + initialAdditionalFee;
+      const roomPrice = Number(roomData?.base_price) || 0;
       const billingMonth = `${startDate.slice(0, 7)}-01`;
 
       const { error: invoiceError } = await (supabase.from("invoices") as any).insert({
         tenant_id: user.id,
         contract_id: contract.id,
         billing_month: billingMonth,
-        room_fee: roomFee,
-        additional_fee: initialAdditionalFee,
+        room_fee: roomPrice,
+        additional_fee: 0,
         penalty_fee: 0,
-        total_amount: totalAmount,
+        total_amount: roomPrice,
         due_date: firstInvoiceDueDate,
         status: "unpaid",
       });
 
       if (invoiceError) {
-        console.warn("Initial invoice creation warning:", invoiceError.message);
+        console.warn("Gagal menerbitkan tagihan pertama otomatis:", invoiceError.message);
       }
     }
   }
 
+  revalidatePath("/invoices");
   revalidatePath("/renters");
   revalidatePath("/rooms");
-  revalidatePath("/invoices");
   revalidatePath("/dashboard");
-  return { 
+  return {
     success: true,
     renter: {
       id: renter.id,
