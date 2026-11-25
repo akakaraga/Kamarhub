@@ -25,12 +25,19 @@ interface OnboardRenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   availableRooms: AvailableRoomOption[];
+  onSuccess?: (renter: {
+    id: string;
+    fullName: string;
+    whatsappNumber: string;
+    roomNumber?: string | null;
+  }) => void;
 }
 
 export function OnboardRenterModal({
   isOpen,
   onClose,
   availableRooms,
+  onSuccess,
 }: OnboardRenterModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +57,16 @@ export function OnboardRenterModal({
     } else {
       setLoading(false);
       onClose();
+      if (onSuccess && res?.renter) {
+        const roomId = formData.get("roomId") as string;
+        const selectedRoom = availableRooms.find((r) => r.id === roomId);
+        onSuccess({
+          id: res.renter.id,
+          fullName: res.renter.fullName,
+          whatsappNumber: res.renter.whatsappNumber,
+          roomNumber: selectedRoom ? selectedRoom.room_number : null,
+        });
+      }
     }
   }
 
