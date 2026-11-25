@@ -152,10 +152,6 @@ export function VerifyPaymentModal({
                 />
               </div>
               <div className="flex items-center justify-between text-[11px] text-slate-500">
-                <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Privat terenkripsi
-                </span>
                 <a
                   href={signedUrl}
                   target="_blank"
