@@ -176,7 +176,7 @@ export default function Home() {
             href="/register"
             className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-base shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2"
           >
-            Mulai Gratis, Siap dalam 2 Menit →
+            Daftar Sekarang →
           </Link>
           <Link
             href="/portal"
@@ -699,12 +699,6 @@ export default function Home() {
             >
               Daftar Gratis Sekarang →
             </Link>
-            <Link
-              href="/login"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 bg-slate-950 hover:bg-slate-800 text-slate-300 font-semibold text-sm transition"
-            >
-              Masuk ke Dasbor
-            </Link>
           </div>
         </div>
       </section>
@@ -715,10 +709,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Building2 className="w-4 h-4 text-blue-500" />
-              <span className="font-semibold text-blue-500">KamarHub</span> — Aplikasi manajemen kos & properti.
-            </div>
-            <div className="text-slate-400">
-              Platform untuk pemilik kos di Indonesia
+              <span className="font-semibold text-blue-500">KamarHub</span>Aplikasi manajemen kos & properti.
             </div>
           </div>
           <div className="pt-4 border-t border-slate-900 text-[11px] text-slate-600 text-center sm:text-left">
