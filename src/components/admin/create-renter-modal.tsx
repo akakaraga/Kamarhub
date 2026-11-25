@@ -58,6 +58,11 @@ export function CreateRenterModal({
   const [billingCycle, setBillingCycle] = useState("entry_date");
   const [customDueDay, setCustomDueDay] = useState(1);
   const [generateFirstInvoice, setGenerateFirstInvoice] = useState(true);
+  const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [depositTreatment, setDepositTreatment] = useState<string>("separate");
+
+  const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
+  const selectedRoomPrice = Number(selectedRoom?.base_price) || 0;
 
   // Helper sync when billing cycle changes
   function handleCycleChange(val: string) {
@@ -90,6 +95,7 @@ export function CreateRenterModal({
       formData.delete("startDate");
       formData.delete("endDate");
       formData.delete("depositAmount");
+      formData.delete("depositTreatment");
       formData.delete("firstInvoiceDueDate");
       formData.delete("billingCycle");
       formData.delete("generateFirstInvoice");
@@ -356,11 +362,45 @@ export function CreateRenterModal({
                       type="number"
                       name="depositAmount"
                       min={0}
-                      defaultValue={0}
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
                       placeholder="0"
-                      className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
                     />
                   </div>
+
+                  {/* Opsi Perlakuan Deposit pada Tagihan Pertama */}
+                  {depositAmount > 0 && (
+                    <div className="mt-2.5 p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-1.5">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900">
+                        Perlakuan Deposit pada Tagihan Pertama
+                      </label>
+                      <select
+                        name="depositTreatment"
+                        value={depositTreatment}
+                        onChange={(e) => setDepositTreatment(e.target.value)}
+                        className="w-full px-2.5 py-1.5 text-xs border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 font-medium"
+                      >
+                        <option value="separate">
+                          Titipan Jaminan Terpisah (Tagihan tetap harga sewa kamar: {formatRupiah(selectedRoomPrice)})
+                        </option>
+                        <option value="include">
+                          Gabungkan ke Tagihan Pertama (Total: sewa + deposit = {formatRupiah(selectedRoomPrice + depositAmount)})
+                        </option>
+                        <option value="deduct">
+                          Sebagai DP / Pemotong Sewa Pertama (Total: sewa - DP = {formatRupiah(Math.max(0, selectedRoomPrice - depositAmount))})
+                        </option>
+                      </select>
+                      <p className="text-[10px] text-amber-800/80 leading-relaxed">
+                        {depositTreatment === "separate" &&
+                          "Deposit dicatat sebagai jaminan fasilitas di kontrak (di-refund saat checkout). Tagihan pertama murni sebesar harga sewa kamar."}
+                        {depositTreatment === "include" &&
+                          "Deposit akan ditambahkan ke rincian tagihan pertama, sehingga anak kos membayar sewa kamar sekaligus uang deposit."}
+                        {depositTreatment === "deduct" &&
+                          "Deposit diperlakukan sebagai uang muka / booking fee yang memotong jumlah tagihan sewa pada bulan pertama."}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Section: Pengaturan Waktu & Jadwal Tagihan */}
