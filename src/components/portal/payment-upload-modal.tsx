@@ -97,7 +97,7 @@ export function PaymentUploadModal({
               <div className="flex flex-col items-center justify-center text-center">
                 <UploadCloud className="w-8 h-8 text-slate-400 mb-2" />
                 <span className="text-xs font-bold text-slate-700">
-                  Sentuh di sini untuk memilih foto struk
+                  Klik untuk upload foto bukti transfer
                 </span>
                 <span className="text-[11px] text-slate-400 mt-1">
                   Format JPG, PNG, atau WebP (Maks. 5 MB)
@@ -113,10 +113,6 @@ export function PaymentUploadModal({
               className="hidden"
             />
           </label>
-        </div>
-
-        <div className="p-3 bg-blue-50 rounded-xl border border-blue-200 text-[11px] text-blue-800">
-          💡 <strong>Tips:</strong> Setelah Anda mengunggah bukti, status tagihan akan otomatis dikirimkan ke pengelola kos untuk diverifikasi sebagai Lunas.
         </div>
 
         <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100">
