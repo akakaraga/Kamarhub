@@ -55,9 +55,18 @@ export async function GET(request: NextRequest) {
   const skippedContracts = [];
 
   for (const contract of activeContracts || []) {
-    // Tentukan hari jatuh tempo berdasarkan tanggal mulai kontrak (misal start_date tgl 15 -> jatuh tempo tgl 15 tiap bulan)
-    const startDateObj = new Date(contract.start_date);
-    const dueDay = Math.min(startDateObj.getDate(), 28); // amankan max tgl 28
+    // Cari invoice sebelumnya untuk mengetahui preferensi tanggal jatuh tempo bulanan yang disetting pemilik
+    const { data: latestInvoice } = await supabase
+      .from("invoices")
+      .select("due_date")
+      .eq("contract_id", contract.id)
+      .order("due_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const dueDaySource = latestInvoice?.due_date || contract.start_date;
+    const dueDayObj = new Date(dueDaySource);
+    const dueDay = Math.min(dueDayObj.getDate(), 28); // amankan max tgl 28
 
     const dueDateObj = new Date(currentYear, currentMonth, dueDay);
     const dueDateStr = dueDateObj.toISOString().slice(0, 10);
