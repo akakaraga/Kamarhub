@@ -98,7 +98,11 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
   }
 
   async function handleDelete(renterId: string, renterName: string) {
-    if (!confirm(`Hapus akun anak kos "${renterName}" secara permanen?`)) {
+    if (
+      !confirm(
+        `Hapus akun anak kos "${renterName}" secara permanen?\n\nRiwayat kontrak yang sudah selesai, tagihan, dan tiket keluhan terkait juga akan ikut dibersihkan.`
+      )
+    ) {
       return;
     }
 
