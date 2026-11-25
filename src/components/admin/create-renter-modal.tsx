@@ -3,19 +3,20 @@
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { createRenterAccount } from "@/app/(admin)/renters/actions";
-import { 
-  User, 
-  Phone, 
-  CreditCard, 
-  DoorClosed, 
-  Calendar, 
-  Banknote, 
-  UploadCloud, 
-  Loader2, 
+import {
+  User,
+  Phone,
+  CreditCard,
+  DoorClosed,
+  Calendar,
+  Banknote,
+  UploadCloud,
+  Loader2,
   AlertCircle,
   Smartphone,
   ShieldCheck,
   CheckCircle2,
+  Receipt,
   Clock
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
@@ -53,14 +54,28 @@ export function CreateRenterModal({
 
   const todayStr = new Date().toISOString().split("T")[0];
   const [startDate, setStartDate] = useState(todayStr);
-  const [firstDueDate, setFirstDueDate] = useState(todayStr);
-  const [generateInvoice, setGenerateInvoice] = useState(true);
+  const [firstInvoiceDueDate, setFirstInvoiceDueDate] = useState(todayStr);
+  const [billingCycle, setBillingCycle] = useState("entry_date");
+  const [customDueDay, setCustomDueDay] = useState(1);
+  const [generateFirstInvoice, setGenerateFirstInvoice] = useState(true);
 
-  function handleStartDateChange(newDate: string) {
-    setStartDate(newDate);
-    // If firstDueDate was same as previous startDate, sync it
-    if (firstDueDate === startDate) {
-      setFirstDueDate(newDate);
+  // Helper sync when billing cycle changes
+  function handleCycleChange(val: string) {
+    setBillingCycle(val);
+    if (!startDate) return;
+
+    const startObj = new Date(startDate);
+    const y = startObj.getFullYear();
+    const m = startObj.getMonth();
+
+    if (val === "entry_date") {
+      setFirstInvoiceDueDate(startDate);
+    } else if (val === "1" || val === "5" || val === "10" || val === "20" || val === "25") {
+      const day = parseInt(val, 10);
+      const computedDate = new Date(y, m, day);
+      // Format YYYY-MM-DD
+      const dateStr = computedDate.toISOString().split("T")[0];
+      setFirstInvoiceDueDate(dateStr);
     }
   }
 
@@ -76,8 +91,8 @@ export function CreateRenterModal({
       formData.delete("endDate");
       formData.delete("depositAmount");
       formData.delete("firstInvoiceDueDate");
+      formData.delete("billingCycle");
       formData.delete("generateFirstInvoice");
-      formData.delete("initialAdditionalFee");
     }
 
     const res = await createRenterAccount(formData);
@@ -300,7 +315,13 @@ export function CreateRenterModal({
                       name="startDate"
                       required={assignRoomNow}
                       value={startDate}
-                      onChange={(e) => handleStartDateChange(e.target.value)}
+                      onChange={(e) => {
+                        const newStart = e.target.value;
+                        setStartDate(newStart);
+                        if (billingCycle === "entry_date") {
+                          setFirstInvoiceDueDate(newStart);
+                        }
+                      }}
                       className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
@@ -343,30 +364,21 @@ export function CreateRenterModal({
                   </div>
                 </div>
 
-                {/* Pengaturan Waktu & Jadwal Tagihan Sewa */}
+                {/* Section: Pengaturan Waktu & Jadwal Tagihan */}
                 <div className="sm:col-span-2 pt-3 border-t border-slate-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-blue-600" />
-                      Waktu & Jadwal Tagihan Sewa
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-blue-600 select-none">
-                      <input
-                        type="checkbox"
-                        name="generateFirstInvoice"
-                        checked={generateInvoice}
-                        onChange={(e) => setGenerateInvoice(e.target.checked)}
-                        className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                      />
-                      Terbitkan Tagihan Pertama Langsung
-                    </label>
+                  <div className="flex items-center gap-1.5 mb-2.5">
+                    <Receipt className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                      Pengaturan Waktu & Jadwal Tagihan
+                    </span>
                   </div>
 
-                  {generateInvoice && (
-                    <div className="p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3">
+                  <div className="space-y-3 bg-blue-50/50 p-3.5 rounded-xl border border-blue-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Tanggal Jatuh Tempo Tagihan Pertama */}
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Batas Waktu Pembayaran Tagihan Pertama (Jatuh Tempo) <span className="text-red-500">*</span>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          Jatuh Tempo Tagihan Pertama <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -375,120 +387,92 @@ export function CreateRenterModal({
                           <input
                             type="date"
                             name="firstInvoiceDueDate"
-                            required={generateInvoice}
-                            value={firstDueDate}
-                            onChange={(e) => setFirstDueDate(e.target.value)}
-                            className="w-full pl-9 pr-3.5 py-2 text-xs border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                            value={firstInvoiceDueDate}
+                            onChange={(e) => setFirstInvoiceDueDate(e.target.value)}
+                            required={assignRoomNow}
+                            className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
                           />
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-1">
-                          Menentukan tanggal jatuh tempo tagihan sewa perdana dan siklus pengingat WhatsApp bulanan.
+                        <p className="text-[10px] text-slate-500 mt-1">
+                          Batas pembayaran sewa pertama untuk anak kos ini.
                         </p>
                       </div>
 
-                      {/* Preset Cepat Siklus Tanggal */}
+                      {/* Siklus Tagihan Bulanan */}
                       <div>
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                          Pilihan Cepat Waktu Jatuh Tempo:
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => setFirstDueDate(startDate)}
-                            className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
-                              firstDueDate === startDate
-                                ? "bg-blue-600 text-white border-blue-600 font-bold"
-                                : "bg-white hover:bg-blue-50 text-slate-700 border-slate-200"
-                            }`}
-                          >
-                            Sama dg Tgl Masuk
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const d = new Date(startDate);
-                              d.setDate(d.getDate() + 3);
-                              setFirstDueDate(d.toISOString().split("T")[0]);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
-                          >
-                            +3 Hari Masuk
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const d = new Date(startDate);
-                              d.setDate(1);
-                              if (new Date(startDate).getDate() > 1) {
-                                d.setMonth(d.getMonth() + 1);
-                              }
-                              setFirstDueDate(d.toISOString().split("T")[0]);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
-                          >
-                            Tgl 1 (Awal Bln)
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const d = new Date(startDate);
-                              d.setDate(5);
-                              if (new Date(startDate).getDate() > 5) {
-                                d.setMonth(d.getMonth() + 1);
-                              }
-                              setFirstDueDate(d.toISOString().split("T")[0]);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
-                          >
-                            Tgl 5
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const d = new Date(startDate);
-                              d.setDate(10);
-                              if (new Date(startDate).getDate() > 10) {
-                                d.setMonth(d.getMonth() + 1);
-                              }
-                              setFirstDueDate(d.toISOString().split("T")[0]);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
-                          >
-                            Tgl 10
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const d = new Date(startDate);
-                              d.setDate(25);
-                              if (new Date(startDate).getDate() > 25) {
-                                d.setMonth(d.getMonth() + 1);
-                              }
-                              setFirstDueDate(d.toISOString().split("T")[0]);
-                            }}
-                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
-                          >
-                            Tgl 25 (Gajian)
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Biaya Tambahan Awal */}
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Biaya Tambahan Tagihan Pertama (Opsional, Rp)
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          Siklus Jatuh Tempo Bulanan
                         </label>
-                        <input
-                          type="number"
-                          name="initialAdditionalFee"
-                          min={0}
-                          defaultValue={0}
-                          placeholder="0 (misal: listrik, parkir, admin)"
-                          className="w-full px-3 py-1.5 text-xs border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        />
+                        <select
+                          name="billingCycle"
+                          value={billingCycle}
+                          onChange={(e) => handleCycleChange(e.target.value)}
+                          className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        >
+                          <option value="entry_date">
+                            Sesuai Tanggal Masuk (Tiap tgl {new Date(startDate || Date.now()).getDate() || "masuk"})
+                          </option>
+                          <option value="1">Setiap Tanggal 1 Tiap Bulan</option>
+                          <option value="5">Setiap Tanggal 5 Tiap Bulan</option>
+                          <option value="10">Setiap Tanggal 10 Tiap Bulan</option>
+                          <option value="20">Setiap Tanggal 20 Tiap Bulan</option>
+                          <option value="25">Setiap Tanggal 25 Tiap Bulan (Gajian)</option>
+                          <option value="custom">Pilih Tanggal Tertentu (1 - 28)...</option>
+                        </select>
+                        <p className="text-[10px] text-slate-500 mt-1">
+                          Jadwal jatuh tempo rutin pada bulan-bulan berikutnya.
+                        </p>
                       </div>
                     </div>
-                  )}
+
+                    {/* Custom Due Day Input */}
+                    {billingCycle === "custom" && (
+                      <div className="pt-1">
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                          Pilih Tanggal Jatuh Tempo Setiap Bulan (Tanggal 1 - 28)
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            name="customDueDay"
+                            min={1}
+                            max={28}
+                            value={customDueDay}
+                            onChange={(e) => {
+                              const d = Math.max(1, Math.min(28, Number(e.target.value) || 1));
+                              setCustomDueDay(d);
+                              const startObj = new Date(startDate);
+                              const computed = new Date(startObj.getFullYear(), startObj.getMonth(), d);
+                              setFirstInvoiceDueDate(computed.toISOString().split("T")[0]);
+                            }}
+                            className="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                          <span className="text-xs text-slate-600">tiap bulan</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Toggle: Terbitkan Tagihan Pertama Sekarang */}
+                    <div className="pt-2 border-t border-blue-200/60">
+                      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          name="generateFirstInvoice"
+                          checked={generateFirstInvoice}
+                          onChange={(e) => setGenerateFirstInvoice(e.target.checked)}
+                          className="w-4 h-4 mt-0.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                        />
+                        <div>
+                          <div className="text-xs font-bold text-slate-800">
+                            Terbitkan Tagihan Sewa Bulan Pertama Sekarang
+                          </div>
+                          <div className="text-[11px] text-slate-600 mt-0.5">
+                            Tagihan langsung aktif di portal anak kos. Begitu anak kos scan QR Code, mereka dapat langsung melihat tagihan & transfer pembayaran.
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             )
