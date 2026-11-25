@@ -20,11 +20,13 @@ import {
   Share2,
   CheckCircle2,
   Copy,
-  Check
+  Check,
+  QrCode
 } from "lucide-react";
 import { CreateRenterModal } from "./create-renter-modal";
 import { EditRenterModal } from "./edit-renter-modal";
 import { ViewKtpModal } from "./view-ktp-modal";
+import { RenterAccessModal, RenterAccessData } from "./renter-access-modal";
 import { terminateContract, deleteRenterAccount } from "@/app/(admin)/renters/actions";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { Tables } from "@/types/database";
@@ -62,6 +64,8 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
   const [deletingRenterId, setDeletingRenterId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [accessModalRenter, setAccessModalRenter] = useState<RenterAccessData | null>(null);
+  const [isNewRegistration, setIsNewRegistration] = useState(false);
 
   // Filter renters
   const filteredRenters = renters.filter((r) => {
@@ -320,6 +324,25 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
                       {/* Actions */}
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* QR Code & Link Login Modal */}
+                          <button
+                            onClick={() => {
+                              setIsNewRegistration(false);
+                              setAccessModalRenter({
+                                id: renter.id,
+                                fullName: renter.full_name,
+                                whatsappNumber: renter.whatsapp_number,
+                                roomNumber: activeContract?.rooms?.room_number,
+                                propertyName: activeContract?.rooms?.properties?.name,
+                              });
+                            }}
+                            title="Buka QR Code & Link Login Langsung"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition"
+                          >
+                            <QrCode className="w-3 h-3 text-blue-600" />
+                            QR Login
+                          </button>
+
                           {/* Kirim Undangan WhatsApp */}
                           <button
                             onClick={() => handleSendInviteWhatsApp(renter)}
@@ -405,6 +428,21 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         availableRooms={availableRooms}
+        onSuccess={(newRenter) => {
+          setIsNewRegistration(true);
+          setAccessModalRenter(newRenter);
+        }}
+      />
+
+      {/* Modal QR Code & Link Login Portal */}
+      <RenterAccessModal
+        isOpen={!!accessModalRenter}
+        onClose={() => {
+          setAccessModalRenter(null);
+          setIsNewRegistration(false);
+        }}
+        renter={accessModalRenter}
+        isNewRegistration={isNewRegistration}
       />
 
       {/* Modal Edit Akun Anak Kos */}
