@@ -15,7 +15,8 @@ import {
   AlertCircle,
   Smartphone,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  Clock
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 import { Tables } from "@/types/database";
@@ -28,12 +29,19 @@ interface CreateRenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   availableRooms: AvailableRoomOption[];
+  onSuccess?: (renter: {
+    id: string;
+    fullName: string;
+    whatsappNumber: string;
+    roomNumber?: string | null;
+  }) => void;
 }
 
 export function CreateRenterModal({
   isOpen,
   onClose,
   availableRooms,
+  onSuccess,
 }: CreateRenterModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +50,19 @@ export function CreateRenterModal({
   const [selectedRoomId, setSelectedRoomId] = useState<string>(
     availableRooms.length > 0 ? availableRooms[0].id : ""
   );
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(todayStr);
+  const [firstDueDate, setFirstDueDate] = useState(todayStr);
+  const [generateInvoice, setGenerateInvoice] = useState(true);
+
+  function handleStartDateChange(newDate: string) {
+    setStartDate(newDate);
+    // If firstDueDate was same as previous startDate, sync it
+    if (firstDueDate === startDate) {
+      setFirstDueDate(newDate);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,6 +75,9 @@ export function CreateRenterModal({
       formData.delete("startDate");
       formData.delete("endDate");
       formData.delete("depositAmount");
+      formData.delete("firstInvoiceDueDate");
+      formData.delete("generateFirstInvoice");
+      formData.delete("initialAdditionalFee");
     }
 
     const res = await createRenterAccount(formData);
@@ -64,6 +88,15 @@ export function CreateRenterModal({
     } else {
       setLoading(false);
       onClose();
+      if (onSuccess && res?.renter) {
+        const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
+        onSuccess({
+          id: res.renter.id,
+          fullName: res.renter.fullName,
+          whatsappNumber: res.renter.whatsappNumber,
+          roomNumber: assignRoomNow && selectedRoom ? selectedRoom.room_number : null,
+        });
+      }
     }
   }
 
@@ -266,7 +299,8 @@ export function CreateRenterModal({
                       type="date"
                       name="startDate"
                       required={assignRoomNow}
-                      defaultValue={new Date().toISOString().split("T")[0]}
+                      value={startDate}
+                      onChange={(e) => handleStartDateChange(e.target.value)}
                       className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
@@ -307,6 +341,154 @@ export function CreateRenterModal({
                       className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
+                </div>
+
+                {/* Pengaturan Waktu & Jadwal Tagihan Sewa */}
+                <div className="sm:col-span-2 pt-3 border-t border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      Waktu & Jadwal Tagihan Sewa
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-blue-600 select-none">
+                      <input
+                        type="checkbox"
+                        name="generateFirstInvoice"
+                        checked={generateInvoice}
+                        onChange={(e) => setGenerateInvoice(e.target.checked)}
+                        className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                      />
+                      Terbitkan Tagihan Pertama Langsung
+                    </label>
+                  </div>
+
+                  {generateInvoice && (
+                    <div className="p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Batas Waktu Pembayaran Tagihan Pertama (Jatuh Tempo) <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <Clock className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <input
+                            type="date"
+                            name="firstInvoiceDueDate"
+                            required={generateInvoice}
+                            value={firstDueDate}
+                            onChange={(e) => setFirstDueDate(e.target.value)}
+                            className="w-full pl-9 pr-3.5 py-2 text-xs border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                          />
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          Menentukan tanggal jatuh tempo tagihan sewa perdana dan siklus pengingat WhatsApp bulanan.
+                        </p>
+                      </div>
+
+                      {/* Preset Cepat Siklus Tanggal */}
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                          Pilihan Cepat Waktu Jatuh Tempo:
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setFirstDueDate(startDate)}
+                            className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
+                              firstDueDate === startDate
+                                ? "bg-blue-600 text-white border-blue-600 font-bold"
+                                : "bg-white hover:bg-blue-50 text-slate-700 border-slate-200"
+                            }`}
+                          >
+                            Sama dg Tgl Masuk
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const d = new Date(startDate);
+                              d.setDate(d.getDate() + 3);
+                              setFirstDueDate(d.toISOString().split("T")[0]);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
+                          >
+                            +3 Hari Masuk
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const d = new Date(startDate);
+                              d.setDate(1);
+                              if (new Date(startDate).getDate() > 1) {
+                                d.setMonth(d.getMonth() + 1);
+                              }
+                              setFirstDueDate(d.toISOString().split("T")[0]);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
+                          >
+                            Tgl 1 (Awal Bln)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const d = new Date(startDate);
+                              d.setDate(5);
+                              if (new Date(startDate).getDate() > 5) {
+                                d.setMonth(d.getMonth() + 1);
+                              }
+                              setFirstDueDate(d.toISOString().split("T")[0]);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
+                          >
+                            Tgl 5
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const d = new Date(startDate);
+                              d.setDate(10);
+                              if (new Date(startDate).getDate() > 10) {
+                                d.setMonth(d.getMonth() + 1);
+                              }
+                              setFirstDueDate(d.toISOString().split("T")[0]);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
+                          >
+                            Tgl 10
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const d = new Date(startDate);
+                              d.setDate(25);
+                              if (new Date(startDate).getDate() > 25) {
+                                d.setMonth(d.getMonth() + 1);
+                              }
+                              setFirstDueDate(d.toISOString().split("T")[0]);
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 transition"
+                          >
+                            Tgl 25 (Gajian)
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Biaya Tambahan Awal */}
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Biaya Tambahan Tagihan Pertama (Opsional, Rp)
+                        </label>
+                        <input
+                          type="number"
+                          name="initialAdditionalFee"
+                          min={0}
+                          defaultValue={0}
+                          placeholder="0 (misal: listrik, parkir, admin)"
+                          className="w-full px-3 py-1.5 text-xs border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )
