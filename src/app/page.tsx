@@ -159,10 +159,6 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center px-6 pt-16 pb-20 text-center max-w-5xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-8">
-          Aplikasi manajemen kos & kontrakan
-        </div>
-
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.18]">
           Tagihan kos tertagih sendiri. <br />
           <span className="text-blue-500">
@@ -405,7 +401,7 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center font-bold text-2xl">
                   🔒
                 </div>
-                <h4 className="text-lg font-bold text-white">Brankas KTP aman</h4>
+                <h4 className="text-lg font-bold text-white">Kemananan Data KTP</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Foto KTP penghuni disimpan terenkripsi dan hanya bisa dibuka oleh Anda.
                 </p>
