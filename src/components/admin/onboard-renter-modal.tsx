@@ -51,6 +51,14 @@ export function OnboardRenterModal({
   const [billingCycle, setBillingCycle] = useState("entry_date");
   const [customDueDay, setCustomDueDay] = useState(1);
   const [generateFirstInvoice, setGenerateFirstInvoice] = useState(true);
+  const [selectedRoomId, setSelectedRoomId] = useState<string>(
+    availableRooms[0]?.id || ""
+  );
+  const [depositAmount, setDepositAmount] = useState<number>(500000);
+  const [depositTreatment, setDepositTreatment] = useState<string>("separate");
+
+  const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
+  const selectedRoomPrice = Number(selectedRoom?.base_price) || 0;
 
   function handleCycleChange(val: string) {
     setBillingCycle(val);
@@ -248,7 +256,8 @@ export function OnboardRenterModal({
               <select
                 name="roomId"
                 required
-                defaultValue={availableRooms[0]?.id || ""}
+                value={selectedRoomId}
+                onChange={(e) => setSelectedRoomId(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 {availableRooms.map((r) => (
@@ -304,11 +313,45 @@ export function OnboardRenterModal({
                 name="depositAmount"
                 min={0}
                 step={50000}
-                defaultValue={500000}
-                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
               />
             </div>
           </div>
+
+          {/* Opsi Perlakuan Deposit pada Tagihan Pertama */}
+          {depositAmount > 0 && (
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900">
+                Perlakuan Deposit pada Tagihan Pertama
+              </label>
+              <select
+                name="depositTreatment"
+                value={depositTreatment}
+                onChange={(e) => setDepositTreatment(e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 font-medium"
+              >
+                <option value="separate">
+                  Titipan Jaminan Terpisah (Tagihan tetap harga sewa kamar: {formatRupiah(selectedRoomPrice)})
+                </option>
+                <option value="include">
+                  Gabungkan ke Tagihan Pertama (Total: sewa + deposit = {formatRupiah(selectedRoomPrice + depositAmount)})
+                </option>
+                <option value="deduct">
+                  Sebagai DP / Pemotong Sewa Pertama (Total: sewa - DP = {formatRupiah(Math.max(0, selectedRoomPrice - depositAmount))})
+                </option>
+              </select>
+              <p className="text-[10px] text-amber-800/80 leading-relaxed">
+                {depositTreatment === "separate" &&
+                  "Deposit dicatat sebagai jaminan fasilitas di kontrak (di-refund saat checkout). Tagihan pertama murni sebesar harga sewa kamar."}
+                {depositTreatment === "include" &&
+                  "Deposit akan ditambahkan ke rincian tagihan pertama, sehingga anak kos membayar sewa kamar sekaligus uang deposit."}
+                {depositTreatment === "deduct" &&
+                  "Deposit diperlakukan sebagai uang muka / booking fee yang memotong jumlah tagihan sewa pada bulan pertama."}
+              </p>
+            </div>
+          )}
 
           {/* Section: Pengaturan Waktu & Jadwal Tagihan */}
           <div className="pt-2 border-t border-slate-100 space-y-2.5">
