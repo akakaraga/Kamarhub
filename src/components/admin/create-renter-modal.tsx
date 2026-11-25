@@ -160,7 +160,7 @@ export function CreateRenterModal({
                   type="text"
                   name="fullName"
                   required
-                  placeholder="Contoh: Dimas Aditya"
+                  placeholder="Dimas Aditya"
                   className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -169,7 +169,7 @@ export function CreateRenterModal({
             {/* Nomor WhatsApp (Kunci Login Portal) */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Nomor WhatsApp (Login Portal) <span className="text-red-500">*</span>
+                Nomor WhatsApp <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -179,17 +179,16 @@ export function CreateRenterModal({
                   type="tel"
                   name="whatsappNumber"
                   required
-                  placeholder="Contoh: 081234567890"
+                  placeholder="081234567890"
                   className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 />
               </div>
-              <p className="text-[10px] text-slate-500 mt-1">Digunakan anak kos untuk masuk ke Portal Mandiri.</p>
             </div>
 
             {/* NIK / No. KTP */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Nomor Induk Kependudukan (NIK/KTP)
+                NIK KTP
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -208,7 +207,7 @@ export function CreateRenterModal({
             {/* Kontak Darurat */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Kontak Darurat (Ortu/Wali)
+                Kontak Darurat
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -217,7 +216,7 @@ export function CreateRenterModal({
                 <input
                   type="text"
                   name="emergencyContact"
-                  placeholder="081987654321 (Ibu/Ayah)"
+                  placeholder="081234567890"
                   className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -226,7 +225,7 @@ export function CreateRenterModal({
             {/* Upload Foto KTP */}
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Foto Dokumen KTP (Disimpan di Brankas Privat Aman)
+                Foto Dokumen KTP
               </label>
               <label className="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-xl cursor-pointer bg-slate-50 hover:bg-blue-50/50 transition">
                 <UploadCloud className="w-6 h-6 text-slate-400 mb-1" />
@@ -393,9 +392,6 @@ export function CreateRenterModal({
                             className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
                           />
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Batas pembayaran sewa pertama untuk anak kos ini.
-                        </p>
                       </div>
 
                       {/* Siklus Tagihan Bulanan */}
@@ -416,12 +412,9 @@ export function CreateRenterModal({
                           <option value="5">Setiap Tanggal 5 Tiap Bulan</option>
                           <option value="10">Setiap Tanggal 10 Tiap Bulan</option>
                           <option value="20">Setiap Tanggal 20 Tiap Bulan</option>
-                          <option value="25">Setiap Tanggal 25 Tiap Bulan (Gajian)</option>
-                          <option value="custom">Pilih Tanggal Tertentu (1 - 28)...</option>
+                          <option value="25">Setiap Tanggal 25 Tiap Bulan</option>
+                          <option value="custom">Pilih Tanggal Tertentu (1 - 28)</option>
                         </select>
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Jadwal jatuh tempo rutin pada bulan-bulan berikutnya.
-                        </p>
                       </div>
                     </div>
 
