@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 import path from "path";
+import QRCode from "qrcode";
 
 // Read .env.local
 const envPath = path.resolve(process.cwd(), ".env.local");
@@ -195,6 +196,35 @@ async function runTestSuite() {
   ];
   const isMatch = normalizedVariants.includes(sampleRenter.whatsapp_number);
   recordTest("Logic", "Passwordless Cross-Format Login Matching", isMatch, "08xx matches 62xx seamlessly");
+
+  // Test F: QR Code & Direct Portal Login Link Formulation
+  const testPhone = "081234567890";
+  const loginUrl = `https://kamarhub.com/portal?phone=${encodeURIComponent(testPhone)}&auto=1`;
+  const urlObj = new URL(loginUrl);
+  const isValidUrl =
+    urlObj.pathname === "/portal" &&
+    urlObj.searchParams.get("phone") === testPhone &&
+    urlObj.searchParams.get("auto") === "1";
+  recordTest(
+    "Logic",
+    "QR Direct Access Link Formulation",
+    isValidUrl,
+    "Valid path /portal?phone=081234567890&auto=1"
+  );
+
+  // Test G: QR Code PNG Data URL Generation Engine
+  try {
+    const qrData = await QRCode.toDataURL(loginUrl, { width: 300 });
+    const isPngDataUrl = qrData.startsWith("data:image/png;base64,");
+    recordTest(
+      "Logic",
+      "QR Code Engine Data URI Generation",
+      isPngDataUrl,
+      `Successfully encoded ${qrData.length} bytes PNG data`
+    );
+  } catch (qrErr) {
+    recordTest("Logic", "QR Code Engine Data URI Generation", false, qrErr.message);
+  }
 
   // SUMMARY
   console.log("\n==================================================");
