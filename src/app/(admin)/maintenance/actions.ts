@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { MaintenanceCategory, MaintenanceStatus } from "@/types/database";
 
 export async function updateTicketStatus(ticketId: string, status: MaintenanceStatus) {
@@ -120,7 +121,23 @@ export async function getMaintenancePhotoSignedUrl(storagePath: string) {
     return { error: "Sesi tidak valid." };
   }
 
-  const { data, error } = await supabase.storage
+  if (storagePath.startsWith("http")) {
+    return { signedUrl: storagePath };
+  }
+
+  // Verifikasi kepemilikan tiket oleh landlord
+  const { data: ticket } = await (supabase.from("maintenance_tickets") as any)
+    .select("id")
+    .eq("tenant_id", user.id)
+    .eq("photo_url", storagePath)
+    .maybeSingle();
+
+  if (!ticket) {
+    return { error: "Akses ditolak atau foto kerusakan tidak ditemukan pada akun Anda." };
+  }
+
+  const adminSupabase = createAdminClient();
+  const { data, error } = await adminSupabase.storage
     .from("maintenance-photos")
     .createSignedUrl(storagePath, 3600);
 

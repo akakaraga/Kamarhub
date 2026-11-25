@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
  * Onboard Penghuni Baru sekaligus Kontrak Kamar
@@ -376,8 +377,24 @@ export async function getKtpSignedUrl(storagePath: string) {
     return { error: "Sesi tidak valid." };
   }
 
+  if (storagePath.startsWith("http")) {
+    return { signedUrl: storagePath };
+  }
+
+  // Verifikasi kepemilikan data penghuni oleh landlord
+  const { data: renter } = await (supabase.from("renters") as any)
+    .select("id")
+    .eq("tenant_id", user.id)
+    .eq("id_card_url", storagePath)
+    .maybeSingle();
+
+  if (!renter) {
+    return { error: "Akses ditolak atau dokumen KTP tidak ditemukan pada akun Anda." };
+  }
+
+  const adminSupabase = createAdminClient();
   // Generate temporary 1-hour signed URL for private bucket
-  const { data, error } = await supabase.storage
+  const { data, error } = await adminSupabase.storage
     .from("ktp-documents")
     .createSignedUrl(storagePath, 3600);
 
