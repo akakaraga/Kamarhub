@@ -31,11 +31,14 @@ export async function createRenterAccount(formData: FormData) {
   const emergencyContact = formData.get("emergencyContact") as string;
   const ktpFile = formData.get("ktpFile") as File | null;
 
-  // Optional contract fields
+  // Optional contract & billing fields
   const roomId = formData.get("roomId") as string | null;
   const startDate = formData.get("startDate") as string | null;
   const endDate = formData.get("endDate") as string | null;
   const depositAmount = Number(formData.get("depositAmount")) || 0;
+  const firstInvoiceDueDate = (formData.get("firstInvoiceDueDate") as string | null) || startDate;
+  const generateFirstInvoice = formData.get("generateFirstInvoice") !== "false" && formData.get("generateFirstInvoice") !== "off";
+  const initialAdditionalFee = Number(formData.get("initialAdditionalFee")) || 0;
 
   if (!fullName || fullName.trim() === "") {
     return { error: "Nama lengkap anak kos wajib diisi." };
@@ -96,7 +99,7 @@ export async function createRenterAccount(formData: FormData) {
       id_card_url: idCardUrl,
       emergency_contact: emergencyContact ? emergencyContact.trim() : null,
     })
-    .select("id")
+    .select("id, full_name, whatsapp_number")
     .single();
 
   if (renterError || !renter) {
@@ -105,18 +108,21 @@ export async function createRenterAccount(formData: FormData) {
 
   // If roomId is assigned, create the contract
   if (roomId && roomId !== "none" && roomId.trim() !== "" && startDate) {
-    const { error: contractError } = await (supabase.from("contracts") as any).insert({
-      tenant_id: user.id,
-      room_id: roomId,
-      renter_id: renter.id,
-      start_date: startDate,
-      end_date: endDate || null,
-      deposit_amount: depositAmount,
-      status: "active",
-    });
+    const { data: contract, error: contractError } = await (supabase.from("contracts") as any)
+      .insert({
+        tenant_id: user.id,
+        room_id: roomId,
+        renter_id: renter.id,
+        start_date: startDate,
+        end_date: endDate || null,
+        deposit_amount: depositAmount,
+        status: "active",
+      })
+      .select("id")
+      .single();
 
-    if (contractError) {
-      return { error: `Akun dibuat, tetapi gagal membuat kontrak sewa: ${contractError.message}` };
+    if (contractError || !contract) {
+      return { error: `Akun dibuat, tetapi gagal membuat kontrak sewa: ${contractError?.message}` };
     }
 
     // Update room status to occupied
@@ -124,12 +130,49 @@ export async function createRenterAccount(formData: FormData) {
       .update({ status: "occupied" })
       .eq("id", roomId)
       .eq("tenant_id", user.id);
+
+    // If initial invoice generation is enabled, create first invoice with the owner-configured due date
+    if (generateFirstInvoice && firstInvoiceDueDate) {
+      const { data: roomData } = await (supabase.from("rooms") as any)
+        .select("base_price")
+        .eq("id", roomId)
+        .eq("tenant_id", user.id)
+        .single();
+
+      const roomFee = roomData ? Number(roomData.base_price) : 0;
+      const totalAmount = roomFee + initialAdditionalFee;
+      const billingMonth = `${startDate.slice(0, 7)}-01`;
+
+      const { error: invoiceError } = await (supabase.from("invoices") as any).insert({
+        tenant_id: user.id,
+        contract_id: contract.id,
+        billing_month: billingMonth,
+        room_fee: roomFee,
+        additional_fee: initialAdditionalFee,
+        penalty_fee: 0,
+        total_amount: totalAmount,
+        due_date: firstInvoiceDueDate,
+        status: "unpaid",
+      });
+
+      if (invoiceError) {
+        console.warn("Initial invoice creation warning:", invoiceError.message);
+      }
+    }
   }
 
   revalidatePath("/renters");
   revalidatePath("/rooms");
+  revalidatePath("/invoices");
   revalidatePath("/dashboard");
-  return { success: true };
+  return { 
+    success: true,
+    renter: {
+      id: renter.id,
+      fullName: renter.full_name || fullName.trim(),
+      whatsappNumber: renter.whatsapp_number || whatsappNumber.trim(),
+    }
+  };
 }
 
 /**
