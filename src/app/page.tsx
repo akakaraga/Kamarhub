@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaqAccordion } from "@/components/home/faq-accordion";
 import { 
   Building2, 
   ArrowRight, 
@@ -620,66 +621,12 @@ export default function Home() {
       {/* FAQ Section */}
       <section id="faq" className="py-20 border-t border-slate-800/80 bg-slate-950">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-14">
+          <div className="text-center mb-12">
             <h2 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">FAQ</h2>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pertanyaan yang sering ditanyakan</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Yang Sering Ditanyakan</h3>
           </div>
 
-          <div className="space-y-4">
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Apakah penghuni harus mengunduh aplikasi?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Tidak. Penghuni cukup membuka tautan lewat browser HP, lalu login dengan nomor WhatsApp untuk melihat tagihan, mengunggah bukti bayar, atau melapor kerusakan.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Saya gaptek. Apakah sulit dipakai?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Tampilan KamarHub sederhana dan berbahasa Indonesia. Cukup 3 langkah: daftarkan kamar, masukkan nomor penghuni, lalu sistem berjalan. Tim kami juga siap membantu jika Anda butuh bantuan.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Seaman apa foto KTP dan data keuangan saya?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Data dilindungi dengan PostgreSQL Row Level Security. Foto KTP disimpan di brankas privat dan hanya bisa dibuka lewat tautan rahasia yang kedaluwarsa dalam 60 detik. Hanya Anda yang punya akses.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Kapan pengingat WhatsApp dikirim?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Ada tiga waktu: H-3 sebelum jatuh tempo, tepat di Hari-H, dan H+1 jika pembayaran belum diterima.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Apakah paket Starter benar-benar gratis?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Ya. Starter gratis selamanya untuk hingga 10 kamar, tanpa kartu kredit dan tanpa masa percobaan.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900 border border-slate-800">
-              <h4 className="font-semibold text-white text-sm">
-                Bisakah dipakai untuk kontrakan atau paviliun?
-              </h4>
-              <p className="mt-2 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Bisa. KamarHub cocok untuk kos, rumah kontrakan, paviliun, guesthouse, hingga ruko sewa.
-              </p>
-            </div>
-          </div>
+          <FaqAccordion />
         </div>
       </section>
 
