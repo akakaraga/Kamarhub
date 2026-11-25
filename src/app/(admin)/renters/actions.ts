@@ -260,7 +260,7 @@ export async function deleteRenterAccount(renterId: string) {
     return { error: "Sesi tidak valid." };
   }
 
-  // Cek apakah ada kontrak aktif
+  // 1. Cek apakah ada kontrak aktif
   const { data: activeContracts } = await (supabase.from("contracts") as any)
     .select("id")
     .eq("renter_id", renterId)
@@ -274,6 +274,35 @@ export async function deleteRenterAccount(renterId: string) {
     };
   }
 
+  // 2. Ambil info KTP penghuni untuk membersihkan file di storage jika ada
+  const { data: renterData } = await (supabase.from("renters") as any)
+    .select("id_card_url")
+    .eq("id", renterId)
+    .eq("tenant_id", user.id)
+    .single();
+
+  // 3. Hapus tiket keluhan / maintenance yang terkait dengan penghuni ini (karena FK ON DELETE RESTRICT)
+  const { error: ticketDeleteError } = await (supabase.from("maintenance_tickets") as any)
+    .delete()
+    .eq("renter_id", renterId)
+    .eq("tenant_id", user.id);
+
+  if (ticketDeleteError) {
+    return { error: `Gagal membersihkan riwayat keluhan penghuni: ${ticketDeleteError.message}` };
+  }
+
+  // 4. Hapus riwayat kontrak yang sudah selesai / berakhir (karena FK ON DELETE RESTRICT)
+  // Invoice yang terhubung ke kontrak tersebut otomatis terhapus via ON DELETE CASCADE
+  const { error: contractDeleteError } = await (supabase.from("contracts") as any)
+    .delete()
+    .eq("renter_id", renterId)
+    .eq("tenant_id", user.id);
+
+  if (contractDeleteError) {
+    return { error: `Gagal membersihkan riwayat kontrak sewa: ${contractDeleteError.message}` };
+  }
+
+  // 5. Hapus data penghuni dari tabel renters
   const { error } = await (supabase.from("renters") as any)
     .delete()
     .eq("id", renterId)
@@ -283,7 +312,16 @@ export async function deleteRenterAccount(renterId: string) {
     return { error: `Gagal menghapus akun: ${error.message}` };
   }
 
+  // 6. Hapus dokumen KTP dari storage privat jika ada
+  if (renterData?.id_card_url) {
+    await supabase.storage
+      .from("ktp-documents")
+      .remove([renterData.id_card_url]);
+  }
+
   revalidatePath("/renters");
+  revalidatePath("/invoices");
+  revalidatePath("/maintenance");
   revalidatePath("/dashboard");
   return { success: true };
 }
