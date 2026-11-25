@@ -167,7 +167,7 @@ export default function Home() {
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed">
-          Tinggalkan buku catatan dan rasa sungkan saat menagih. KamarHub mengirim pengingat WhatsApp yang sopan, memeriksa bukti transfer, dan menerbitkan kuitansi digital secara otomatis.
+          Tinggalkan buku catatan dan rasa sungkan saat menagih. KamarHub mengirim pengingat WhatsApp, memeriksa bukti transfer, dan menerbitkan kuitansi digital secara otomatis.
         </p>
 
         {/* Hero CTAs */}
