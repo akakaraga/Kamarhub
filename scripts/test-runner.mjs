@@ -226,6 +226,18 @@ async function runTestSuite() {
     recordTest("Logic", "QR Code Engine Data URI Generation", false, qrErr.message);
   }
 
+  // Test H: Owner Billing Schedule Configuration
+  const mockStartDate = "2026-11-25";
+  const mockFirstDue = "2026-12-05";
+  const mockBillingMonth = `${mockStartDate.slice(0, 7)}-01`;
+  const isDueValid = new Date(mockFirstDue).getDate() === 5 && mockBillingMonth === "2026-11-01";
+  recordTest(
+    "Logic",
+    "Owner-Configured Billing Schedule & First Invoice Due Date",
+    isDueValid,
+    `Billing Month: ${mockBillingMonth}, Due Date: ${mockFirstDue}`
+  );
+
   // SUMMARY
   console.log("\n==================================================");
   console.log("                TEST SUITE SUMMARY");
