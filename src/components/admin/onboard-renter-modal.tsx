@@ -12,7 +12,9 @@ import {
   Banknote, 
   UploadCloud, 
   Loader2, 
-  AlertCircle 
+  AlertCircle,
+  Receipt,
+  Clock 
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 import { Tables } from "@/types/database";
@@ -42,6 +44,30 @@ export function OnboardRenterModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(todayStr);
+  const [firstInvoiceDueDate, setFirstInvoiceDueDate] = useState(todayStr);
+  const [billingCycle, setBillingCycle] = useState("entry_date");
+  const [customDueDay, setCustomDueDay] = useState(1);
+  const [generateFirstInvoice, setGenerateFirstInvoice] = useState(true);
+
+  function handleCycleChange(val: string) {
+    setBillingCycle(val);
+    if (!startDate) return;
+
+    const startObj = new Date(startDate);
+    const y = startObj.getFullYear();
+    const m = startObj.getMonth();
+
+    if (val === "entry_date") {
+      setFirstInvoiceDueDate(startDate);
+    } else if (val === "1" || val === "5" || val === "10" || val === "20" || val === "25") {
+      const day = parseInt(val, 10);
+      const computedDate = new Date(y, m, day);
+      setFirstInvoiceDueDate(computedDate.toISOString().split("T")[0]);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -244,7 +270,14 @@ export function OnboardRenterModal({
                 type="date"
                 name="startDate"
                 required
-                defaultValue={new Date().toISOString().split("T")[0]}
+                value={startDate}
+                onChange={(e) => {
+                  const newStart = e.target.value;
+                  setStartDate(newStart);
+                  if (billingCycle === "entry_date") {
+                    setFirstInvoiceDueDate(newStart);
+                  }
+                }}
                 className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -274,6 +307,117 @@ export function OnboardRenterModal({
                 defaultValue={500000}
                 className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+          </div>
+
+          {/* Section: Pengaturan Waktu & Jadwal Tagihan */}
+          <div className="pt-2 border-t border-slate-100 space-y-2.5">
+            <div className="flex items-center gap-1.5">
+              <Receipt className="w-4 h-4 text-blue-600" />
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Pengaturan Waktu & Jadwal Tagihan
+              </span>
+            </div>
+
+            <div className="space-y-3 bg-blue-50/50 p-3.5 rounded-xl border border-blue-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Tanggal Jatuh Tempo Tagihan Pertama */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Jatuh Tempo Tagihan Pertama <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <input
+                      type="date"
+                      name="firstInvoiceDueDate"
+                      value={firstInvoiceDueDate}
+                      onChange={(e) => setFirstInvoiceDueDate(e.target.value)}
+                      required
+                      className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Batas pembayaran sewa pertama untuk anak kos ini.
+                  </p>
+                </div>
+
+                {/* Siklus Tagihan Bulanan */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Siklus Jatuh Tempo Bulanan
+                  </label>
+                  <select
+                    name="billingCycle"
+                    value={billingCycle}
+                    onChange={(e) => handleCycleChange(e.target.value)}
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="entry_date">
+                      Sesuai Tanggal Masuk (Tiap tgl {new Date(startDate || Date.now()).getDate() || "masuk"})
+                    </option>
+                    <option value="1">Setiap Tanggal 1 Tiap Bulan</option>
+                    <option value="5">Setiap Tanggal 5 Tiap Bulan</option>
+                    <option value="10">Setiap Tanggal 10 Tiap Bulan</option>
+                    <option value="20">Setiap Tanggal 20 Tiap Bulan</option>
+                    <option value="25">Setiap Tanggal 25 Tiap Bulan (Gajian)</option>
+                    <option value="custom">Pilih Tanggal Tertentu (1 - 28)...</option>
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Jadwal jatuh tempo rutin pada bulan-bulan berikutnya.
+                  </p>
+                </div>
+              </div>
+
+              {/* Custom Due Day Input */}
+              {billingCycle === "custom" && (
+                <div className="pt-1">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                    Pilih Tanggal Jatuh Tempo Setiap Bulan (Tanggal 1 - 28)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      name="customDueDay"
+                      min={1}
+                      max={28}
+                      value={customDueDay}
+                      onChange={(e) => {
+                        const d = Math.max(1, Math.min(28, Number(e.target.value) || 1));
+                        setCustomDueDay(d);
+                        const startObj = new Date(startDate);
+                        const computed = new Date(startObj.getFullYear(), startObj.getMonth(), d);
+                        setFirstInvoiceDueDate(computed.toISOString().split("T")[0]);
+                      }}
+                      className="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                    <span className="text-xs text-slate-600">tiap bulan</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Toggle: Terbitkan Tagihan Pertama Sekarang */}
+              <div className="pt-2 border-t border-blue-200/60">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    name="generateFirstInvoice"
+                    checked={generateFirstInvoice}
+                    onChange={(e) => setGenerateFirstInvoice(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                  />
+                  <div>
+                    <div className="text-xs font-bold text-slate-800">
+                      Terbitkan Tagihan Sewa Bulan Pertama Sekarang
+                    </div>
+                    <div className="text-[11px] text-slate-600 mt-0.5">
+                      Tagihan langsung aktif di portal anak kos. Begitu anak kos scan QR Code, mereka dapat langsung melihat tagihan & transfer pembayaran.
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
 
