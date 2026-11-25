@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { InvoiceStatus } from "@/types/database";
 
 export async function createManualInvoice(formData: FormData) {
@@ -179,12 +180,28 @@ export async function getPaymentProofSignedUrl(storagePath: string) {
     return { error: "Sesi tidak valid." };
   }
 
-  const { data, error } = await supabase.storage
+  if (storagePath.startsWith("http")) {
+    return { signedUrl: storagePath };
+  }
+
+  // Verifikasi kepemilikan tagihan oleh landlord sebelum membuat signed URL
+  const { data: invoice } = await (supabase.from("invoices") as any)
+    .select("id")
+    .eq("tenant_id", user.id)
+    .eq("payment_proof_url", storagePath)
+    .maybeSingle();
+
+  if (!invoice) {
+    return { error: "Akses ditolak atau bukti transfer tidak ditemukan pada akun Anda." };
+  }
+
+  const adminSupabase = createAdminClient();
+  const { data, error } = await adminSupabase.storage
     .from("payment-proofs")
     .createSignedUrl(storagePath, 3600);
 
   if (error || !data?.signedUrl) {
-    return { error: "Gagal mengambil foto bukti transfer privat." };
+    return { error: `Gagal mengambil foto bukti transfer privat: ${error?.message || "Berkas tidak ditemukan"}` };
   }
 
   return { signedUrl: data.signedUrl };
