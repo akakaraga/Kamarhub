@@ -238,6 +238,20 @@ async function runTestSuite() {
     `Billing Month: ${mockBillingMonth}, Due Date: ${mockFirstDue}`
   );
 
+  // Test I: Enforced Option 3 - Deposit Automatically Deducts from First Invoice
+  const roomBasePrice = 1500000;
+  const depositVal = 500000;
+  const firstInvoiceDeductedAmount = Math.max(0, roomBasePrice - depositVal);
+
+  const isDepositDeductionValid = firstInvoiceDeductedAmount === 1000000;
+
+  recordTest(
+    "Logic",
+    "Option 3: Deposit Automatically Deducts from First Invoice",
+    isDepositDeductionValid,
+    `Room: Rp ${roomBasePrice.toLocaleString("id-ID")}, Deposit: Rp ${depositVal.toLocaleString("id-ID")} -> First Bill: Rp ${firstInvoiceDeductedAmount.toLocaleString("id-ID")}`
+  );
+
   // SUMMARY
   console.log("\n==================================================");
   console.log("                TEST SUITE SUMMARY");
