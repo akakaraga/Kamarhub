@@ -119,6 +119,16 @@ async function runTestSuite() {
       const ktpBucket = buckets ? buckets.find((b) => b.name === "ktp-documents") : null;
       if (ktpBucket) {
         recordTest("Storage", "Private KTP Documents Bucket", !ktpBucket.public, `Is Public: ${ktpBucket.public} (Must be false for privacy)`);
+        
+        // Verify admin client upload & signed url capability
+        const testKtpBuffer = Buffer.from("dummy-ktp-content-for-test");
+        const testPath = `test-verification/${Date.now()}_ktp.txt`;
+        const { error: upErr } = await adminClient.storage.from("ktp-documents").upload(testPath, testKtpBuffer, { upsert: true });
+        const { data: signData, error: sErr } = await adminClient.storage.from("ktp-documents").createSignedUrl(testPath, 60);
+        const ktpSuccess = !upErr && Boolean(signData?.signedUrl);
+        recordTest("Storage", "Private KTP Secure Upload & Signed Access", ktpSuccess, ktpSuccess ? "Uploaded and temporary signed URL generated successfully" : (upErr?.message || sErr?.message));
+        // Clean up test file
+        await adminClient.storage.from("ktp-documents").remove([testPath]);
       } else {
         recordTest("Storage", "Private KTP Documents Bucket", true, "Encrypted storage configured");
       }
