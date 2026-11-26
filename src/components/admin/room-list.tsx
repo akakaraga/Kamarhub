@@ -16,6 +16,7 @@ import {
   Filter
 } from "lucide-react";
 import { RoomModal } from "./room-modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { updateRoomStatus, deleteRoom } from "@/app/(admin)/rooms/actions";
 import { formatRupiah } from "@/lib/utils";
 import { Tables, RoomStatus } from "@/types/database";
@@ -39,6 +40,7 @@ export function RoomList({ rooms, properties, initialPropertyId }: RoomListProps
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Tables<"rooms"> | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [confirmDeleteRoom, setConfirmDeleteRoom] = useState<{ id: string; roomNumber: string } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Filtered rooms
@@ -75,13 +77,16 @@ export function RoomList({ rooms, properties, initialPropertyId }: RoomListProps
     setUpdatingId(null);
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Hapus unit kamar ini secara permanen?")) return;
+  async function handleDeleteConfirm() {
+    if (!confirmDeleteRoom) return;
+    const { id } = confirmDeleteRoom;
     setUpdatingId(id);
     setErrorMessage(null);
     const res = await deleteRoom(id);
     if (res?.error) {
       setErrorMessage(res.error);
+    } else {
+      setConfirmDeleteRoom(null);
     }
     setUpdatingId(null);
   }
@@ -265,7 +270,12 @@ export function RoomList({ rooms, properties, initialPropertyId }: RoomListProps
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => handleDelete(room.id)}
+                        onClick={() =>
+                          setConfirmDeleteRoom({
+                            id: room.id,
+                            roomNumber: room.room_number,
+                          })
+                        }
                         disabled={updatingId === room.id}
                         title="Hapus Kamar"
                         className="p-1 text-slate-400 hover:text-red-600 hover:bg-white/80 rounded transition disabled:opacity-50"
@@ -341,6 +351,19 @@ export function RoomList({ rooms, properties, initialPropertyId }: RoomListProps
         defaultPropertyId={
           selectedPropertyId !== "all" ? selectedPropertyId : undefined
         }
+      />
+
+      {/* Modal Konfirmasi Hapus Kamar */}
+      <ConfirmModal
+        isOpen={!!confirmDeleteRoom}
+        onClose={() => setConfirmDeleteRoom(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Unit Kamar?"
+        description={`Apakah Anda yakin ingin menghapus unit kamar "${confirmDeleteRoom?.roomNumber}" secara permanen? Pastikan tidak ada kontrak aktif pada kamar ini.`}
+        confirmText="Hapus Kamar"
+        cancelText="Batal"
+        variant="danger"
+        isLoading={updatingId === confirmDeleteRoom?.id}
       />
     </div>
   );
