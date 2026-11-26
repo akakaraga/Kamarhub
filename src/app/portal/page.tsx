@@ -72,7 +72,7 @@ function LoginForm() {
     <div className="bg-slate-800/80 backdrop-blur-xl border border-slate-700/80 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
       <div className="text-center space-y-1.5">
         <h1 className="text-2xl font-black text-white tracking-tight">
-          Selamat Datang! 👋
+          Selamat Datang
         </h1>
         <p className="text-xs text-slate-400">
           Masuk ke portal mandiri kos untuk melihat tagihan sewa, kirim bukti bayar, dan lapor keluhan fasilitas.
@@ -113,7 +113,7 @@ function LoginForm() {
             />
           </div>
           <p className="text-[11px] text-slate-400 mt-1.5">
-            Gunakan nomor WhatsApp yang didaftarkan saat mulai menyewa kos.
+            Gunakan nomor WhatsApp untuk dapat masuk ke portal.
           </p>
         </div>
 
@@ -135,17 +135,6 @@ function LoginForm() {
           )}
         </button>
       </form>
-
-      {/* Quick Demo Hint */}
-      <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-700/60 text-[11px] text-slate-400 space-y-1">
-        <div className="flex items-center gap-1 font-semibold text-slate-300">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          Demo Akun Seeder:
-        </div>
-        <div>
-          Gunakan nomor WhatsApp: <strong className="text-white">081298765432</strong> (Akun penghuni Rian Pratama).
-        </div>
-      </div>
     </div>
   );
 }
