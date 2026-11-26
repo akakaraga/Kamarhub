@@ -97,10 +97,6 @@ export function RenterPortalView({
                   {room?.room_type || "Standard Room"}
                 </p>
               </div>
-
-              <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/20">
-                🟢 Aktif
-              </span>
             </div>
 
             <div className="pt-3 border-t border-white/20 grid grid-cols-2 gap-2 text-xs">
@@ -143,7 +139,7 @@ export function RenterPortalView({
                       : "bg-amber-100 text-amber-800 border border-amber-200"
                   }`}
                 >
-                  {activeInvoice.status === "overdue" ? "⚠️ Terlambat" : "⏳ Belum Lunas"}
+                  {activeInvoice.status === "overdue" ? "⚠️ Terlambat" : "Belum Lunas"}
                 </span>
               </div>
 
@@ -226,7 +222,7 @@ export function RenterPortalView({
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <h4 className="font-bold text-slate-900 text-sm">
-                Semua Tagihan Sudah Lunas! 🎉
+                Semua Tagihan Sudah Lunas!
               </h4>
               <p className="text-xs text-slate-400 max-w-xs mx-auto">
                 Tidak ada tagihan sewa yang menunggu pembayaran. Terima kasih telah membayar tepat waktu.
