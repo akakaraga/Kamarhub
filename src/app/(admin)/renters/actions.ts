@@ -134,6 +134,7 @@ export async function createRenterAccount(formData: FormData) {
     const generateFirstInvoice = 
       formData.get("generateFirstInvoice") === "on" || 
       formData.get("generateFirstInvoice") === "true";
+    const depositTreatment = (formData.get("depositTreatment") as string) || "separate";
 
     if (generateFirstInvoice && contract) {
       const { data: roomData } = await (supabase.from("rooms") as any)
@@ -141,17 +142,28 @@ export async function createRenterAccount(formData: FormData) {
         .eq("id", roomId)
         .single();
 
-      const roomPrice = Number(roomData?.base_price) || 0;
+      const baseRoomPrice = Number(roomData?.base_price) || 0;
       const billingMonth = `${startDate.slice(0, 7)}-01`;
+
+      let roomFee = baseRoomPrice;
+      let additionalFee = 0;
+
+      if (depositTreatment === "include" && depositAmount > 0) {
+        additionalFee = depositAmount;
+      } else if (depositTreatment === "deduct" && depositAmount > 0) {
+        roomFee = Math.max(0, baseRoomPrice - depositAmount);
+      }
+
+      const totalAmount = roomFee + additionalFee;
 
       const { error: invoiceError } = await (supabase.from("invoices") as any).insert({
         tenant_id: user.id,
         contract_id: contract.id,
         billing_month: billingMonth,
-        room_fee: roomPrice,
-        additional_fee: 0,
+        room_fee: roomFee,
+        additional_fee: additionalFee,
         penalty_fee: 0,
-        total_amount: roomPrice,
+        total_amount: totalAmount,
         due_date: firstInvoiceDueDate,
         status: "unpaid",
       });
