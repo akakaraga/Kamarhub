@@ -55,7 +55,6 @@ export function OnboardRenterModal({
     availableRooms[0]?.id || ""
   );
   const [depositAmount, setDepositAmount] = useState<number>(500000);
-  const [depositTreatment, setDepositTreatment] = useState<string>("separate");
 
   const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
   const selectedRoomPrice = Number(selectedRoom?.base_price) || 0;
@@ -320,35 +319,33 @@ export function OnboardRenterModal({
             </div>
           </div>
 
-          {/* Opsi Perlakuan Deposit pada Tagihan Pertama */}
+          {/* Info Pemotongan Tagihan Pertama dengan Deposit / DP */}
           {depositAmount > 0 && (
-            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-1.5">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-900">
-                Perlakuan Deposit pada Tagihan Pertama
-              </label>
-              <select
-                name="depositTreatment"
-                value={depositTreatment}
-                onChange={(e) => setDepositTreatment(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 font-medium"
-              >
-                <option value="separate">
-                  Titipan Jaminan Terpisah (Tagihan tetap harga sewa kamar: {formatRupiah(selectedRoomPrice)})
-                </option>
-                <option value="include">
-                  Gabungkan ke Tagihan Pertama (Total: sewa + deposit = {formatRupiah(selectedRoomPrice + depositAmount)})
-                </option>
-                <option value="deduct">
-                  Sebagai DP / Pemotong Sewa Pertama (Total: sewa - DP = {formatRupiah(Math.max(0, selectedRoomPrice - depositAmount))})
-                </option>
-              </select>
-              <p className="text-[10px] text-amber-800/80 leading-relaxed">
-                {depositTreatment === "separate" &&
-                  "Deposit dicatat sebagai jaminan fasilitas di kontrak (di-refund saat checkout). Tagihan pertama murni sebesar harga sewa kamar."}
-                {depositTreatment === "include" &&
-                  "Deposit akan ditambahkan ke rincian tagihan pertama, sehingga anak kos membayar sewa kamar sekaligus uang deposit."}
-                {depositTreatment === "deduct" &&
-                  "Deposit diperlakukan sebagai uang muka / booking fee yang memotong jumlah tagihan sewa pada bulan pertama."}
+            <div className="p-3.5 bg-blue-50/80 rounded-xl border border-blue-200 space-y-2">
+              <div className="text-xs font-bold text-blue-950 flex items-center justify-between">
+                <span>Penyesuaian Tagihan Pertama:</span>
+                <span className="text-[11px] font-semibold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
+                  Dipotong Deposit/DP
+                </span>
+              </div>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Harga Sewa Kamar:</span>
+                  <span className="font-semibold text-slate-900">{formatRupiah(selectedRoomPrice)}</span>
+                </div>
+                <div className="flex justify-between text-emerald-700 font-medium">
+                  <span>Dipotong Deposit / DP di Awal:</span>
+                  <span>- {formatRupiah(depositAmount)}</span>
+                </div>
+                <div className="pt-1.5 border-t border-blue-200 flex justify-between font-bold text-xs">
+                  <span className="text-slate-800">Total Tagihan Pertama:</span>
+                  <span className="text-blue-700 font-extrabold text-sm">
+                    {formatRupiah(Math.max(0, selectedRoomPrice - depositAmount))}
+                  </span>
+                </div>
+              </div>
+              <p className="text-[10px] text-blue-900/70 leading-relaxed pt-0.5">
+                * Uang deposit/DP yang dibayar di awal otomatis memotong tagihan sewa bulan pertama. Bulan berikutnya tagihan akan kembali normal sesuai harga kamar.
               </p>
             </div>
           )}
