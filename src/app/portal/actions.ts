@@ -57,7 +57,7 @@ export async function loginRenter(formData: FormData) {
     path: "/",
   });
 
-  redirect("/portal/dashboard");
+  return { success: true };
 }
 
 /**
