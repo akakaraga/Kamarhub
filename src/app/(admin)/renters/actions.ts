@@ -134,7 +134,6 @@ export async function createRenterAccount(formData: FormData) {
     const generateFirstInvoice = 
       formData.get("generateFirstInvoice") === "on" || 
       formData.get("generateFirstInvoice") === "true";
-    const depositTreatment = (formData.get("depositTreatment") as string) || "separate";
 
     if (generateFirstInvoice && contract) {
       const { data: roomData } = await (supabase.from("rooms") as any)
@@ -145,16 +144,12 @@ export async function createRenterAccount(formData: FormData) {
       const baseRoomPrice = Number(roomData?.base_price) || 0;
       const billingMonth = `${startDate.slice(0, 7)}-01`;
 
-      let roomFee = baseRoomPrice;
-      let additionalFee = 0;
-
-      if (depositTreatment === "include" && depositAmount > 0) {
-        additionalFee = depositAmount;
-      } else if (depositTreatment === "deduct" && depositAmount > 0) {
-        roomFee = Math.max(0, baseRoomPrice - depositAmount);
-      }
-
-      const totalAmount = roomFee + additionalFee;
+      // Opsi 3: Deposit / Uang Muka di awal otomatis memotong tagihan sewa bulan pertama
+      const roomFee = depositAmount > 0 
+        ? Math.max(0, baseRoomPrice - depositAmount) 
+        : baseRoomPrice;
+      const additionalFee = 0;
+      const totalAmount = roomFee;
 
       const { error: invoiceError } = await (supabase.from("invoices") as any).insert({
         tenant_id: user.id,
