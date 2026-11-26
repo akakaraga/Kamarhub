@@ -73,7 +73,8 @@ export async function createRenterAccount(formData: FormData) {
     const fileExt = ktpFile.name.split(".").pop();
     const cleanFileName = `${user.id}/${Date.now()}_ktp.${fileExt}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const adminSupabase = createAdminClient();
+    const { data: uploadData, error: uploadError } = await adminSupabase.storage
       .from("ktp-documents")
       .upload(cleanFileName, ktpFile, {
         contentType: ktpFile.type,
@@ -81,7 +82,8 @@ export async function createRenterAccount(formData: FormData) {
       });
 
     if (uploadError) {
-      console.warn("KTP upload warning:", uploadError.message);
+      console.error("KTP upload error:", uploadError.message);
+      return { error: `Gagal mengunggah foto KTP: ${uploadError.message}` };
     } else {
       idCardUrl = uploadData.path;
     }
@@ -228,7 +230,8 @@ export async function updateRenterAccount(formData: FormData) {
     const fileExt = ktpFile.name.split(".").pop();
     const cleanFileName = `${user.id}/${Date.now()}_ktp.${fileExt}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const adminSupabase = createAdminClient();
+    const { data: uploadData, error: uploadError } = await adminSupabase.storage
       .from("ktp-documents")
       .upload(cleanFileName, ktpFile, {
         contentType: ktpFile.type,
@@ -237,6 +240,9 @@ export async function updateRenterAccount(formData: FormData) {
 
     if (!uploadError && uploadData) {
       updateData.id_card_url = uploadData.path;
+    } else if (uploadError) {
+      console.error("Update KTP upload error:", uploadError.message);
+      return { error: `Gagal mengunggah foto KTP baru: ${uploadError.message}` };
     }
   }
 
