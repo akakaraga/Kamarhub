@@ -134,14 +134,6 @@ export function CreateRenterModal({
         </div>
       )}
 
-      {/* Info Box: Kredensial Portal */}
-      <div className="mb-5 p-3.5 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-3">
-        <Smartphone className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-        <div className="text-xs text-blue-900 leading-relaxed">
-          <span className="font-bold">Akses Otomatis ke Portal Anak Kos:</span> Nomor WhatsApp yang Anda daftarkan di bawah ini akan menjadi kunci masuk bagi penghuni untuk mengakses tagihan dan lapor komplain di <strong>/portal</strong> tanpa perlu password.
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Section 1: Profil Penghuni */}
         <div>
@@ -491,9 +483,6 @@ export function CreateRenterModal({
                         <div>
                           <div className="text-xs font-bold text-slate-800">
                             Terbitkan Tagihan Sewa Bulan Pertama Sekarang
-                          </div>
-                          <div className="text-[11px] text-slate-600 mt-0.5">
-                            Tagihan langsung aktif di portal anak kos. Begitu anak kos scan QR Code, mereka dapat langsung melihat tagihan & transfer pembayaran.
                           </div>
                         </div>
                       </label>
