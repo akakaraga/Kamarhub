@@ -38,6 +38,8 @@ function LoginForm() {
               setError(res.error);
               setLoading(false);
               setIsQrLogin(false);
+            } else if (res?.success) {
+              window.location.href = "/portal/dashboard";
             }
           })
           .catch((err) => {
@@ -61,6 +63,8 @@ function LoginForm() {
     if (res?.error) {
       setError(res.error);
       setLoading(false);
+    } else if (res?.success) {
+      window.location.href = "/portal/dashboard";
     }
   }
 
