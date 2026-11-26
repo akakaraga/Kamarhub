@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { createRoom, updateRoom } from "@/app/(admin)/rooms/actions";
-import { DoorClosed, Building2, Tag, Banknote, Loader2 } from "lucide-react";
+import { DoorClosed, Building2, Tag, Banknote, Loader2, Sparkles, Lightbulb } from "lucide-react";
 import { Tables, RoomStatus } from "@/types/database";
+import { formatRupiah } from "@/lib/utils";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -13,6 +14,29 @@ interface RoomModalProps {
   room?: Tables<"rooms"> | null;
   defaultPropertyId?: string;
 }
+
+const ROOM_NUMBER_EXAMPLES = [
+  { label: "Kamar 101", desc: "Format Lantai 1" },
+  { label: "Kamar 102", desc: "Format Lantai 1" },
+  { label: "Kamar 01", desc: "Format Urut" },
+  { label: "A-01", desc: "Format Blok/Sayap" },
+  { label: "VIP-01", desc: "Tipe Khusus" },
+];
+
+const ROOM_TYPE_PRESETS = [
+  "AC + KM Dalam",
+  "AC + KM Luar",
+  "Non-AC (KM Dalam)",
+  "Non-AC (KM Luar)",
+  "Kamar Kosongan",
+];
+
+const PRICE_PRESETS = [
+  { label: "Rp 800.000", value: 800000 },
+  { label: "Rp 1.000.000", value: 1000000 },
+  { label: "Rp 1.500.000", value: 1500000 },
+  { label: "Rp 2.000.000", value: 2000000 },
+];
 
 export function RoomModal({
   isOpen,
@@ -25,6 +49,27 @@ export function RoomModal({
   const [error, setError] = useState<string | null>(null);
 
   const isEditing = Boolean(room);
+
+  // Form states to allow preset chip clicks
+  const [roomNumber, setRoomNumber] = useState(room?.room_number || "");
+  const [roomType, setRoomType] = useState(room?.room_type || "");
+  const [basePrice, setBasePrice] = useState<number | string>(
+    room?.base_price ?? (isEditing ? 1500000 : 1000000)
+  );
+
+  // Sync state when room prop changes or modal opens
+  useEffect(() => {
+    if (room) {
+      setRoomNumber(room.room_number || "");
+      setRoomType(room.room_type || "");
+      setBasePrice(room.base_price ?? 1500000);
+    } else {
+      setRoomNumber("");
+      setRoomType("");
+      setBasePrice(1000000);
+    }
+    setError(null);
+  }, [room, isOpen]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,12 +94,12 @@ export function RoomModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? `Edit Kamar ${room?.room_number}` : "Tambah Unit Kamar Baru"}
+      title={isEditing ? `Edit Unit Kamar ${room?.room_number}` : "Tambah Unit Kamar Kos"}
       description="Tentukan nomor kamar, fasilitas tipe, dan harga sewa dasar bulanan."
-      maxWidth="md"
+      maxWidth="lg"
     >
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg font-medium">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
           {error}
         </div>
       )}
@@ -66,14 +111,14 @@ export function RoomModal({
             Gedung Kos <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Building2 className="w-4 h-4" />
             </div>
             <select
               name="propertyId"
               required
               defaultValue={room?.property_id || defaultPropertyId || properties[0]?.id || ""}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition font-medium text-slate-800"
             >
               {properties.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -84,52 +129,111 @@ export function RoomModal({
           </div>
         </div>
 
-        {/* Nomor Kamar */}
+        {/* Nomor / Kode Kamar */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-            Nomor / Kode Kamar <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Nomor / Kode Kamar <span className="text-red-500">*</span>
+            </label>
+            <span className="text-[11px] text-slate-400 font-medium">
+              Format Bebas (Angka / Huruf)
+            </span>
+          </div>
+
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <DoorClosed className="w-4 h-4" />
             </div>
             <input
               type="text"
               name="roomNumber"
               required
-              defaultValue={room?.room_number || ""}
-              placeholder="Contoh: 101, A-02, VIP-1"
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+              placeholder="Contoh: Kamar 101, A-02, atau VIP-1"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition font-semibold text-slate-900"
             />
+          </div>
+
+          {/* Quick Example Suggestions */}
+          <div className="mt-2 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+              <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>Pilihan Contoh Format Nomor Kamar:</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {ROOM_NUMBER_EXAMPLES.map((ex) => (
+                <button
+                  key={ex.label}
+                  type="button"
+                  onClick={() => setRoomNumber(ex.label)}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition flex items-center gap-1 ${
+                    roomNumber === ex.label
+                      ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                      : "bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:text-blue-600"
+                  }`}
+                >
+                  <span>{ex.label}</span>
+                  <span className={`text-[10px] ${roomNumber === ex.label ? "text-blue-100" : "text-slate-400"}`}>
+                    ({ex.desc})
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Tipe Kamar */}
+        {/* Tipe Kamar & Fasilitas */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
             Tipe Kamar & Fasilitas
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Tag className="w-4 h-4" />
             </div>
             <input
               type="text"
               name="roomType"
-              defaultValue={room?.room_type || "Standard (AC, KM Dalam)"}
-              placeholder="Contoh: AC + KM Dalam, Non-AC, Suite VIP"
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={roomType}
+              onChange={(e) => setRoomType(e.target.value)}
+              placeholder="Contoh: AC + KM Dalam, Non-AC, atau Suite VIP"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition font-medium text-slate-800"
             />
+          </div>
+
+          {/* Quick Preset Chips for Room Type */}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {ROOM_TYPE_PRESETS.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setRoomType(preset)}
+                className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
+                  roomType === preset
+                    ? "bg-slate-800 text-white border-slate-800"
+                    : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                + {preset}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Harga Dasar Bulanan */}
+        {/* Harga Sewa Dasar Bulanan */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-            Harga Sewa Dasar Bulanan (Rp) <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Harga Sewa Dasar Bulanan (Rp) <span className="text-red-500">*</span>
+            </label>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+              {formatRupiah(Number(basePrice) || 0)} / bulan
+            </span>
+          </div>
+
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Banknote className="w-4 h-4" />
             </div>
             <input
@@ -138,42 +242,62 @@ export function RoomModal({
               required
               min={0}
               step={50000}
-              defaultValue={room?.base_price || 1500000}
-              placeholder="1500000"
-              className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={basePrice}
+              onChange={(e) => setBasePrice(e.target.value)}
+              placeholder="1000000"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition font-semibold text-slate-900"
             />
+          </div>
+
+          {/* Price Quick Presets */}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {PRICE_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => setBasePrice(p.value)}
+                className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
+                  Number(basePrice) === p.value
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Status Awal (jika edit) */}
+        {/* Status Operasional */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-            Status Operasional
+            Status Operasional Kamar
           </label>
           <select
             name="status"
             defaultValue={room?.status || "available"}
-            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition"
+            className="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition font-medium text-slate-800"
           >
-            <option value="available">Tersedia (Available)</option>
-            <option value="occupied">Terisi (Occupied)</option>
-            <option value="maintenance">Dalam Perbaikan (Maintenance)</option>
+            <option value="available">🟢 Tersedia (Available)</option>
+            <option value="occupied">🔴 Terisi (Occupied)</option>
+            <option value="maintenance">🟡 Dalam Perbaikan (Maintenance)</option>
           </select>
         </div>
 
-        <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+        {/* Buttons */}
+        <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
+            className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm shadow-blue-500/20 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition disabled:opacity-50"
           >
             {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             {isEditing ? "Simpan Perubahan" : "Simpan Kamar"}
