@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Building2, Plus, MapPin, DoorClosed, MoreVertical, Pencil, Trash2, Loader2 } from "lucide-react";
 import { PropertyModal } from "./property-modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { deleteProperty } from "@/app/(admin)/properties/actions";
 import { Tables } from "@/types/database";
 
@@ -15,6 +16,7 @@ export function PropertyList({ properties }: PropertyListProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Tables<"properties"> | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteProperty, setConfirmDeleteProperty] = useState<{ id: string; name: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function handleOpenCreate() {
@@ -27,8 +29,9 @@ export function PropertyList({ properties }: PropertyListProps) {
     setModalOpen(true);
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Apakah Anda yakin ingin menghapus properti ini?")) return;
+  async function handleDeleteConfirm() {
+    if (!confirmDeleteProperty) return;
+    const { id } = confirmDeleteProperty;
 
     setDeletingId(id);
     setDeleteError(null);
@@ -36,6 +39,8 @@ export function PropertyList({ properties }: PropertyListProps) {
     const res = await deleteProperty(id);
     if (res?.error) {
       setDeleteError(res.error);
+    } else {
+      setConfirmDeleteProperty(null);
     }
     setDeletingId(null);
   }
@@ -113,7 +118,12 @@ export function PropertyList({ properties }: PropertyListProps) {
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(prop.id)}
+                      onClick={() =>
+                        setConfirmDeleteProperty({
+                          id: prop.id,
+                          name: prop.name,
+                        })
+                      }
                       disabled={deletingId === prop.id}
                       title="Hapus Gedung"
                       className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
@@ -157,6 +167,18 @@ export function PropertyList({ properties }: PropertyListProps) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         property={editingProperty}
+      />
+
+      <ConfirmModal
+        isOpen={!!confirmDeleteProperty}
+        onClose={() => setConfirmDeleteProperty(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Gedung Properti?"
+        description={`Apakah Anda yakin ingin menghapus gedung "${confirmDeleteProperty?.name}"? Pastikan tidak ada kamar yang masih terdaftar di gedung ini.`}
+        confirmText="Hapus Gedung"
+        cancelText="Batal"
+        variant="danger"
+        isLoading={deletingId === confirmDeleteProperty?.id}
       />
     </div>
   );
