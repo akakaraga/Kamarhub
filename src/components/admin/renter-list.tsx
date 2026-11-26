@@ -27,6 +27,7 @@ import { CreateRenterModal } from "./create-renter-modal";
 import { EditRenterModal } from "./edit-renter-modal";
 import { ViewKtpModal } from "./view-ktp-modal";
 import { RenterAccessModal, RenterAccessData } from "./renter-access-modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { terminateContract, deleteRenterAccount } from "@/app/(admin)/renters/actions";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { Tables } from "@/types/database";
@@ -62,6 +63,13 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
   } | null>(null);
   const [terminatingContractId, setTerminatingContractId] = useState<string | null>(null);
   const [deletingRenterId, setDeletingRenterId] = useState<string | null>(null);
+  const [confirmDeleteRenter, setConfirmDeleteRenter] = useState<{ id: string; name: string } | null>(null);
+  const [confirmTerminate, setConfirmTerminate] = useState<{
+    contractId: string;
+    roomId: string;
+    renterName: string;
+    roomNumber?: string;
+  } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [accessModalRenter, setAccessModalRenter] = useState<RenterAccessData | null>(null);
@@ -78,40 +86,32 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
     return matchName || matchPhone || matchRoom;
   });
 
-  async function handleTerminate(contractId: string, roomId: string, renterName: string) {
-    if (
-      !confirm(
-        `Apakah Anda yakin ingin menyelesaikan kontrak sewa untuk "${renterName}"? Kamar akan otomatis kembali berstatus Tersedia.`
-      )
-    ) {
-      return;
-    }
-
+  async function handleTerminateConfirm() {
+    if (!confirmTerminate) return;
+    const { contractId, roomId } = confirmTerminate;
     setTerminatingContractId(contractId);
     setActionError(null);
 
     const res = await terminateContract(contractId, roomId);
     if (res?.error) {
       setActionError(res.error);
+    } else {
+      setConfirmTerminate(null);
     }
     setTerminatingContractId(null);
   }
 
-  async function handleDelete(renterId: string, renterName: string) {
-    if (
-      !confirm(
-        `Hapus akun anak kos "${renterName}" secara permanen?\n\nRiwayat kontrak yang sudah selesai, tagihan, dan tiket keluhan terkait juga akan ikut dibersihkan.`
-      )
-    ) {
-      return;
-    }
-
+  async function handleDeleteConfirm() {
+    if (!confirmDeleteRenter) return;
+    const renterId = confirmDeleteRenter.id;
     setDeletingRenterId(renterId);
     setActionError(null);
 
     const res = await deleteRenterAccount(renterId);
     if (res?.error) {
       setActionError(res.error);
+    } else {
+      setConfirmDeleteRenter(null);
     }
     setDeletingRenterId(null);
   }
@@ -383,11 +383,12 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
                           {activeContract && (
                             <button
                               onClick={() =>
-                                handleTerminate(
-                                  activeContract.id,
-                                  activeContract.room_id,
-                                  renter.full_name
-                                )
+                                setConfirmTerminate({
+                                  contractId: activeContract.id,
+                                  roomId: activeContract.room_id,
+                                  renterName: renter.full_name,
+                                  roomNumber: activeContract.rooms?.room_number,
+                                })
                               }
                               disabled={terminatingContractId === activeContract.id}
                               title="Selesaikan Masa Sewa / Checkout"
@@ -404,7 +405,12 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
                           {/* Hapus Akun jika tidak ada kontrak aktif */}
                           {!activeContract && (
                             <button
-                              onClick={() => handleDelete(renter.id, renter.full_name)}
+                              onClick={() =>
+                                setConfirmDeleteRenter({
+                                  id: renter.id,
+                                  name: renter.full_name,
+                                })
+                              }
                               disabled={deletingRenterId === renter.id}
                               title="Hapus Akun Anak Kos"
                               className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
@@ -426,6 +432,32 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
           </div>
         </div>
       )}
+
+      {/* Modal Konfirmasi Hapus Akun */}
+      <ConfirmModal
+        isOpen={!!confirmDeleteRenter}
+        onClose={() => setConfirmDeleteRenter(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Hapus Akun Anak Kos?"
+        description={`Hapus akun "${confirmDeleteRenter?.name}" secara permanen? Riwayat kontrak yang sudah selesai, tagihan, dan tiket keluhan terkait juga akan ikut dibersihkan.`}
+        confirmText="Hapus Permanen"
+        cancelText="Batal"
+        variant="danger"
+        isLoading={deletingRenterId === confirmDeleteRenter?.id}
+      />
+
+      {/* Modal Konfirmasi Selesai Kontrak */}
+      <ConfirmModal
+        isOpen={!!confirmTerminate}
+        onClose={() => setConfirmTerminate(null)}
+        onConfirm={handleTerminateConfirm}
+        title="Selesaikan Kontrak Sewa?"
+        description={`Apakah Anda yakin ingin menyelesaikan kontrak sewa untuk "${confirmTerminate?.renterName}"? Kamar${confirmTerminate?.roomNumber ? ` (${confirmTerminate.roomNumber})` : ""} akan otomatis kembali berstatus Tersedia.`}
+        confirmText="Selesaikan Sewa"
+        cancelText="Batal"
+        variant="warning"
+        isLoading={terminatingContractId === confirmTerminate?.contractId}
+      />
 
       {/* Modal Tambah Akun Anak Kos */}
       <CreateRenterModal
