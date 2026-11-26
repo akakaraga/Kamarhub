@@ -86,7 +86,7 @@ function LoginForm() {
             "Memproses..."
           ) : (
             <>
-              Masuk ke Dasbor
+              Masuk ke Dashboard
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -121,7 +121,7 @@ export default function LoginPage() {
           Masuk ke Portal Pemilik Kos
         </h2>
         <p className="mt-1 text-center text-sm text-slate-500">
-          Kelola aset, tagihan otomatis, dan kontrak sewa dalam satu dasbor
+          Kelola aset, tagihan otomatis, dan kontrak sewa dalam satu platform
         </p>
       </div>
 

@@ -149,7 +149,7 @@ export default function RegisterPage() {
                 "Mendaftarkan Akun..."
               ) : (
                 <>
-                  Daftar & Mulai Dasbor
+                  Daftar
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -164,11 +164,6 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
-        </div>
-
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>Isolasi Basis Data Multi-Tenant Mandiri per Pemilik Kos</span>
         </div>
       </div>
     </div>
