@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { createRoom, updateRoom } from "@/app/(admin)/rooms/actions";
-import { DoorClosed, Building2, Tag, Banknote, Loader2, Sparkles, Lightbulb } from "lucide-react";
+import { DoorClosed, Building2, Tag, Banknote, Loader2 } from "lucide-react";
 import { Tables, RoomStatus } from "@/types/database";
 import { formatRupiah } from "@/lib/utils";
 
@@ -14,14 +14,6 @@ interface RoomModalProps {
   room?: Tables<"rooms"> | null;
   defaultPropertyId?: string;
 }
-
-const ROOM_NUMBER_EXAMPLES = [
-  { label: "Kamar 101", desc: "Format Lantai 1" },
-  { label: "Kamar 102", desc: "Format Lantai 1" },
-  { label: "Kamar 01", desc: "Format Urut" },
-  { label: "A-01", desc: "Format Blok/Sayap" },
-  { label: "VIP-01", desc: "Tipe Khusus" },
-];
 
 const ROOM_TYPE_PRESETS = [
   "AC + KM Dalam",
@@ -131,15 +123,9 @@ export function RoomModal({
 
         {/* Nomor / Kode Kamar */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Nomor / Kode Kamar <span className="text-red-500">*</span>
-            </label>
-            <span className="text-[11px] text-slate-400 font-medium">
-              Format Bebas (Angka / Huruf)
-            </span>
-          </div>
-
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            Nomor / Kode Kamar <span className="text-red-500">*</span>
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <DoorClosed className="w-4 h-4" />
@@ -153,33 +139,6 @@ export function RoomModal({
               placeholder="Contoh: Kamar 101, A-02, atau VIP-1"
               className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition font-semibold text-slate-900"
             />
-          </div>
-
-          {/* Quick Example Suggestions */}
-          <div className="mt-2 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
-              <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-              <span>Pilihan Contoh Format Nomor Kamar:</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5 pt-0.5">
-              {ROOM_NUMBER_EXAMPLES.map((ex) => (
-                <button
-                  key={ex.label}
-                  type="button"
-                  onClick={() => setRoomNumber(ex.label)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition flex items-center gap-1 ${
-                    roomNumber === ex.label
-                      ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                      : "bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:text-blue-600"
-                  }`}
-                >
-                  <span>{ex.label}</span>
-                  <span className={`text-[10px] ${roomNumber === ex.label ? "text-blue-100" : "text-slate-400"}`}>
-                    ({ex.desc})
-                  </span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
