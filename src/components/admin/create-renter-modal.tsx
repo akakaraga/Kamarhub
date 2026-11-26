@@ -392,9 +392,6 @@ export function CreateRenterModal({
                           </span>
                         </div>
                       </div>
-                      <p className="text-[10px] text-blue-900/70 leading-relaxed pt-0.5">
-                        * Uang deposit/DP yang dibayar di awal otomatis memotong tagihan sewa bulan pertama. Bulan berikutnya tagihan akan kembali normal sesuai harga kamar.
-                      </p>
                     </div>
                   )}
                 </div>
