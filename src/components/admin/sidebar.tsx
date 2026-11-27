@@ -68,7 +68,7 @@ export function AdminSidebar({ companyName = "Kos Hub", subscriptionPlan = "free
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         <div className="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-          Menu Operasional
+          Menu Properti
         </div>
         {navigation.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
