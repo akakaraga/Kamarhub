@@ -15,13 +15,6 @@ interface RoomModalProps {
   defaultPropertyId?: string;
 }
 
-const PRICE_PRESETS = [
-  { label: "Rp 800.000", value: 800000 },
-  { label: "Rp 1.000.000", value: 1000000 },
-  { label: "Rp 1.500.000", value: 1500000 },
-  { label: "Rp 2.000.000", value: 2000000 },
-];
-
 export function RoomModal({
   isOpen,
   onClose,
@@ -34,11 +27,11 @@ export function RoomModal({
 
   const isEditing = Boolean(room);
 
-  // Form states to allow preset chip clicks
+  // Form states for controlled inputs
   const [roomNumber, setRoomNumber] = useState(room?.room_number || "");
   const [roomType, setRoomType] = useState(room?.room_type || "");
   const [basePrice, setBasePrice] = useState<number | string>(
-    room?.base_price ?? (isEditing ? 1500000 : 1000000)
+    room?.base_price ?? ""
   );
 
   // Sync state when room prop changes or modal opens
@@ -46,11 +39,11 @@ export function RoomModal({
     if (room) {
       setRoomNumber(room.room_number || "");
       setRoomType(room.room_type || "");
-      setBasePrice(room.base_price ?? 1500000);
+      setBasePrice(room.base_price ?? "");
     } else {
       setRoomNumber("");
       setRoomType("");
-      setBasePrice(1000000);
+      setBasePrice("");
     }
     setError(null);
   }, [room, isOpen]);
@@ -160,9 +153,11 @@ export function RoomModal({
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
               Harga Sewa Dasar Bulanan (Rp) <span className="text-red-500">*</span>
             </label>
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
-              {formatRupiah(Number(basePrice) || 0)} / bulan
-            </span>
+            {basePrice ? (
+              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                {formatRupiah(Number(basePrice) || 0)} / bulan
+              </span>
+            ) : null}
           </div>
 
           <div className="relative">
@@ -174,30 +169,12 @@ export function RoomModal({
               name="basePrice"
               required
               min={0}
-              step={50000}
+              step={10000}
               value={basePrice}
               onChange={(e) => setBasePrice(e.target.value)}
-              placeholder="1000000"
+              placeholder="Contoh: 1500000"
               className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition font-semibold text-slate-900"
             />
-          </div>
-
-          {/* Price Quick Presets */}
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {PRICE_PRESETS.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => setBasePrice(p.value)}
-                className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
-                  Number(basePrice) === p.value
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
           </div>
         </div>
 
