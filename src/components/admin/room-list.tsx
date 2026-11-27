@@ -100,7 +100,7 @@ export function RoomList({ rooms, properties, initialPropertyId }: RoomListProps
             Manajemen Unit Kamar
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Visualisasi status kamar secara real-time: Hijau (Tersedia), Merah (Terisi), dan Kuning (Perbaikan).
+            List status kamar secara real-time: Hijau (Tersedia), Merah (Terisi), dan Kuning (Perbaikan).
           </p>
         </div>
         <div className="flex items-center gap-2.5">
