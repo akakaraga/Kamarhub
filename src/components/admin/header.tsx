@@ -23,11 +23,6 @@ export function AdminHeader({ userEmail, userName, companyName }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
-          <Shield className="w-3.5 h-3.5 text-emerald-600" />
-          <span>RLS Active (Secure Multi-Tenant)</span>
-        </div>
-
         <button 
           title="Notifikasi"
           className="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition relative"
