@@ -225,7 +225,7 @@ export default async function DashboardPage() {
             </div>
             <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              Arus kas masuk terverifikasi
+              Arus kas masuk
             </p>
           </div>
         </div>
@@ -262,9 +262,6 @@ export default async function DashboardPage() {
               </h2>
               <p className="text-xs text-slate-500">Historis akumulasi pembayaran sewa yang berhasil diverifikasi 6 bulan terakhir</p>
             </div>
-            <span className="text-xs font-medium px-2.5 py-1 rounded bg-slate-100 text-slate-600">
-              Semester Ini
-            </span>
           </div>
 
           {/* Visual Bar Chart */}
