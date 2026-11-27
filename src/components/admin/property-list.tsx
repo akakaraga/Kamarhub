@@ -53,7 +53,7 @@ export function PropertyList({ properties }: PropertyListProps) {
             Manajemen Properti (Gedung Kos)
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Kelola cabang dan bangunan kos Anda. Satu akun pemilik dapat mengelola multi-gedung.
+            Kelola cabang dan bangunan kos Anda. Satu akun pemilik dapat mengelola multi gedung.
           </p>
         </div>
         <button
