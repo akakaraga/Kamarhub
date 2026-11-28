@@ -137,14 +137,11 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Dasbor Eksekutif & Analitik Kos
+              Dashboard Analitik Kos
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700">
-              Live Real-Time
-            </span>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">
-            Ikhtisar performa arus kas, tingkat okupansi unit, serta pemantauan tiket perbaikan seluruh properti kos Anda.
+            Ringkasan performa arus kas, tingkat okupansi unit, serta pemantauan tiket perbaikan seluruh properti kos Anda.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
