@@ -1,14 +1,17 @@
 "use client";
 
-import { Bell, User, Search, Shield, Building } from "lucide-react";
+import { User, Search, Shield, Building } from "lucide-react";
+import { NotificationDropdown } from "./notification-dropdown";
+import { AdminNotification } from "@/lib/notifications";
 
 interface HeaderProps {
   userEmail?: string;
   userName?: string;
   companyName?: string;
+  notifications?: AdminNotification[];
 }
 
-export function AdminHeader({ userEmail, userName, companyName }: HeaderProps) {
+export function AdminHeader({ userEmail, userName, companyName, notifications = [] }: HeaderProps) {
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4 flex-1">
@@ -23,13 +26,8 @@ export function AdminHeader({ userEmail, userName, companyName }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <button 
-          title="Notifikasi"
-          className="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition relative"
-        >
-          <Bell className="w-4 h-4" />
-          <span className="w-2 h-2 rounded-full bg-blue-600 absolute top-2 right-2"></span>
-        </button>
+        {/* Interactive Notification Bell Dropdown */}
+        <NotificationDropdown initialNotifications={notifications} />
 
         <div className="h-6 w-[1px] bg-slate-200 mx-1"></div>
 
