@@ -51,9 +51,10 @@ export interface RenterWithContract extends Tables<"renters"> {
 interface RenterListProps {
   renters: RenterWithContract[];
   availableRooms: any[];
+  properties?: { id: string; name: string }[];
 }
 
-export function RenterList({ renters, availableRooms }: RenterListProps) {
+export function RenterList({ renters, availableRooms, properties = [] }: RenterListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingRenter, setEditingRenter] = useState<Tables<"renters"> | null>(null);
@@ -464,6 +465,7 @@ export function RenterList({ renters, availableRooms }: RenterListProps) {
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         availableRooms={availableRooms}
+        properties={properties}
         onSuccess={(newRenter) => {
           setIsNewRegistration(true);
           setAccessModalRenter(newRenter);
