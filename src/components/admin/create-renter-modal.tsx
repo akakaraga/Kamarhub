@@ -336,7 +336,7 @@ export function CreateRenterModal({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Pilih Unit Kamar Kosong <span className="text-red-500">*</span>
+                      Pilih Unit Kamar <span className="text-red-500">*</span>
                     </label>
                     <span className="text-[10px] text-slate-500 font-medium">
                       {filteredRooms.length} kamar kosong
