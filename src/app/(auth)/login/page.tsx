@@ -131,8 +131,6 @@ export default function LoginPage() {
         </Suspense>
 
         <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>Keamanan Terisolasi Multi-Tenant dengan PostgreSQL RLS</span>
         </div>
       </div>
     </div>
