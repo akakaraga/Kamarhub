@@ -9,14 +9,15 @@ import {
   AlertCircle, 
   CheckCheck, 
   ChevronRight, 
-  ShieldCheck,
-  X
+  ShieldCheck 
 } from "lucide-react";
 import { AdminNotification } from "@/lib/notifications";
 
 interface NotificationDropdownProps {
   initialNotifications: AdminNotification[];
 }
+
+const STORAGE_KEY = "kamarhub_read_notifications";
 
 export function NotificationDropdown({ initialNotifications }: NotificationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +30,32 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
   useEffect(() => {
     setNotifications(initialNotifications);
   }, [initialNotifications]);
+
+  // Load read status from localStorage on client mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setReadIds(new Set(JSON.parse(saved)));
+      }
+    } catch {
+      // LocalStorage access failsafe
+    }
+  }, []);
+
+  // Helper to persist read notifications
+  const markAsRead = (ids: string[]) => {
+    setReadIds((prev) => {
+      const updated = new Set(prev);
+      ids.forEach((id) => updated.add(id));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(updated)));
+      } catch {
+        // LocalStorage access failsafe
+      }
+      return updated;
+    });
+  };
 
   // Click outside listener
   useEffect(() => {
@@ -55,9 +82,9 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
     };
   }, [isOpen]);
 
-  const unreadCount = notifications.filter(
-    (n) => n.isActionable && !readIds.has(n.id)
-  ).length;
+  // Dynamic unread count (unread = not yet marked as read)
+  const unreadCount = notifications.filter((n) => !readIds.has(n.id)).length;
+  const actionableCount = notifications.filter((n) => n.isActionable && !readIds.has(n.id)).length;
 
   const filteredNotifications = notifications.filter((n) => {
     if (activeTab === "actionable") {
@@ -67,12 +94,11 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
   });
 
   function handleMarkAllAsRead() {
-    const allIds = new Set(notifications.map((n) => n.id));
-    setReadIds(allIds);
+    markAsRead(notifications.map((n) => n.id));
   }
 
   function handleItemClick(id: string) {
-    setReadIds((prev) => new Set(prev).add(id));
+    markAsRead([id]);
     setIsOpen(false);
   }
 
@@ -82,7 +108,7 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        title="Buka Notifikasi & Aktivitas Kos"
+        title={unreadCount > 0 ? `${unreadCount} notifikasi terbaru` : "Notifikasi"}
         className={`w-9 h-9 rounded-xl border flex items-center justify-center transition relative ${
           isOpen
             ? "bg-blue-50 border-blue-300 text-blue-600 shadow-sm"
@@ -90,9 +116,13 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
         }`}
       >
         <Bell className="w-4 h-4" />
+        {/* Dynamic Indicator Badge on Bell Icon */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-pulse">
-            {unreadCount > 9 ? "9+" : unreadCount}
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 text-white text-[9px] font-bold items-center justify-center border-2 border-white shadow-sm">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
           </span>
         )}
       </button>
@@ -106,15 +136,18 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
               <span className="text-sm font-bold text-slate-900 tracking-tight">
                 Notifikasi
               </span>
+              
+              {/* Dynamic status pill: only show "X Terbaru" if there are unread messages */}
               {unreadCount > 0 ? (
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-700 rounded-full border border-red-200">
-                  {unreadCount} perlu tindakan
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200 flex items-center gap-1.5 shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+                  <span>{unreadCount} Terbaru</span>
                 </span>
-              ) : (
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded-full border border-emerald-200">
-                  Terbaru
+              ) : notifications.length > 0 ? (
+                <span className="px-2 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-500 rounded-full border border-slate-200">
+                  Semua Terbaca
                 </span>
-              )}
+              ) : null}
             </div>
 
             {unreadCount > 0 && (
@@ -125,7 +158,7 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
                 className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
-                <span>Sudah Dibaca</span>
+                <span>Tandai Dibaca</span>
               </button>
             )}
           </div>
@@ -152,7 +185,7 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
                   : "border-transparent text-slate-500 hover:text-slate-800"
               }`}
             >
-              Perlu Tindakan ({notifications.filter((n) => n.isActionable).length})
+              Perlu Tindakan ({actionableCount > 0 ? actionableCount : notifications.filter((n) => n.isActionable).length})
             </button>
           </div>
 
@@ -205,11 +238,15 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
                     href={notif.link}
                     onClick={() => handleItemClick(notif.id)}
                     className={`block p-3.5 transition hover:bg-slate-50 relative ${
-                      isRead ? "opacity-60 bg-white" : "bg-blue-50/20"
+                      isRead ? "opacity-60 bg-white" : "bg-blue-50/25"
                     }`}
                   >
+                    {/* Animated dot indicator for unread item */}
                     {!isRead && (
-                      <span className="w-2 h-2 rounded-full bg-blue-600 absolute top-4 right-3"></span>
+                      <span className="flex h-2 w-2 absolute top-4 right-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
+                      </span>
                     )}
 
                     <div className="flex items-start gap-3">
@@ -218,7 +255,14 @@ export function NotificationDropdown({ initialNotifications }: NotificationDropd
                       </div>
 
                       <div className="flex-1 min-w-0 pr-2">
-                        <div className="flex items-center gap-1.5 mb-1">
+                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                          {/* Dynamic "Terbaru" tag on fresh unread item */}
+                          {!isRead && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white shadow-xs">
+                              Terbaru
+                            </span>
+                          )}
+
                           {notif.badge && (
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${iconConfig.badgeColor}`}>
                               {notif.badge}
