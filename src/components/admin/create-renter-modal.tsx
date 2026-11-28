@@ -7,6 +7,7 @@ import {
   User,
   Phone,
   CreditCard,
+  Building2,
   DoorClosed,
   Calendar,
   Banknote,
@@ -30,6 +31,7 @@ interface CreateRenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   availableRooms: AvailableRoomOption[];
+  properties?: { id: string; name: string }[];
   onSuccess?: (renter: {
     id: string;
     fullName: string;
@@ -42,15 +44,45 @@ export function CreateRenterModal({
   isOpen,
   onClose,
   availableRooms,
+  properties,
   onSuccess,
 }: CreateRenterModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [assignRoomNow, setAssignRoomNow] = useState(availableRooms.length > 0);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("all");
   const [selectedRoomId, setSelectedRoomId] = useState<string>(
     availableRooms.length > 0 ? availableRooms[0].id : ""
   );
+
+  // Compute available properties for filtering
+  const propertyOptions = properties && properties.length > 0
+    ? properties
+    : Array.from(
+        new Map(
+          availableRooms
+            .filter((r) => r.property_id && r.properties?.name)
+            .map((r) => [r.property_id, { id: r.property_id, name: r.properties!.name }])
+        ).values()
+      );
+
+  // Filter rooms based on selected property
+  const filteredRooms = selectedPropertyId === "all"
+    ? availableRooms
+    : availableRooms.filter((r) => r.property_id === selectedPropertyId);
+
+  function handlePropertyChange(propId: string) {
+    setSelectedPropertyId(propId);
+    const roomsInProp = propId === "all"
+      ? availableRooms
+      : availableRooms.filter((r) => r.property_id === propId);
+    if (roomsInProp.length > 0) {
+      setSelectedRoomId(roomsInProp[0].id);
+    } else {
+      setSelectedRoomId("");
+    }
+  }
 
   const todayStr = new Date().toISOString().split("T")[0];
   const [startDate, setStartDate] = useState(todayStr);
@@ -276,25 +308,74 @@ export function CreateRenterModal({
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                {/* Pilih Kamar */}
-                <div className="sm:col-span-2">
+                {/* 1. Pilih Gedung / Cabang Kos */}
+                <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Pilih Unit Kamar Kosong <span className="text-red-500">*</span>
+                    Gedung Kos <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    name="roomId"
-                    value={selectedRoomId}
-                    onChange={(e) => setSelectedRoomId(e.target.value)}
-                    required={assignRoomNow}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  >
-                    {availableRooms.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        Kamar {r.room_number} ({r.properties?.name || "Kos"}) — {r.room_type} — {formatRupiah(Number(r.base_price))}/bln
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <select
+                      value={selectedPropertyId}
+                      onChange={(e) => handlePropertyChange(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium text-slate-800"
+                    >
+                      <option value="all">Semua Gedung Kos</option>
+                      {propertyOptions.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
+
+                {/* 2. Pilih Unit Kamar Kosong (berdasarkan gedung yang dipilih) */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Pilih Unit Kamar Kosong <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {filteredRooms.length} kamar kosong
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <DoorClosed className="w-4 h-4" />
+                    </div>
+                    <select
+                      name="roomId"
+                      value={selectedRoomId}
+                      onChange={(e) => setSelectedRoomId(e.target.value)}
+                      required={assignRoomNow && filteredRooms.length > 0}
+                      disabled={filteredRooms.length === 0}
+                      className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium text-slate-800 disabled:bg-slate-100 disabled:text-slate-400"
+                    >
+                      {filteredRooms.length === 0 ? (
+                        <option value="" disabled>
+                          Tidak ada kamar kosong di kos ini
+                        </option>
+                      ) : (
+                        filteredRooms.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            Kamar {r.room_number} ({r.properties?.name || "Kos"}) — {r.room_type} — {formatRupiah(Number(r.base_price))}/bln
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Info jika tidak ada kamar kosong di gedung yang dipilih */}
+                {filteredRooms.length === 0 && (
+                  <div className="sm:col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Gedung kos ini saat ini tidak memiliki unit kamar berstatus Tersedia. Silakan pilih gedung kos lain atau pilih <strong>Semua Gedung Kos</strong>.</span>
+                  </div>
+                )}
 
                 {/* Tanggal Mulai Sewa */}
                 <div>
