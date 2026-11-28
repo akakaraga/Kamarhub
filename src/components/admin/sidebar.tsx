@@ -24,7 +24,7 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: "Ringkasan Dasbor", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Ringkasan", href: "/dashboard", icon: LayoutDashboard },
   { name: "Properti (Kos)", href: "/properties", icon: Home },
   { name: "Daftar Kamar", href: "/rooms", icon: DoorClosed },
   { name: "Penghuni & Kontrak", href: "/renters", icon: Users },
