@@ -91,6 +91,20 @@ export function CreateRenterModal({
   const [customDueDay, setCustomDueDay] = useState(1);
   const [generateFirstInvoice, setGenerateFirstInvoice] = useState(true);
   const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [depositDisplay, setDepositDisplay] = useState<string>("");
+
+  function handleDepositChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const cleanDigits = e.target.value.replace(/\D/g, "");
+    if (!cleanDigits) {
+      setDepositAmount(0);
+      setDepositDisplay("");
+      return;
+    }
+    // Parse integer to strip any leading zeros (e.g. "0300000" -> 300000)
+    const numericValue = parseInt(cleanDigits, 10);
+    setDepositAmount(numericValue);
+    setDepositDisplay(new Intl.NumberFormat("id-ID").format(numericValue));
+  }
 
   const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
   const selectedRoomPrice = Number(selectedRoom?.base_price) || 0;
@@ -422,21 +436,30 @@ export function CreateRenterModal({
 
                 {/* Deposit Jaminan */}
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Uang Deposit Jaminan (Rp)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Uang Deposit Jaminan (Rp)
+                    </label>
+                    {depositAmount > 0 && (
+                      <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                        Rp {depositDisplay}
+                      </span>
+                    )}
+                  </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                       <Banknote className="w-4 h-4" />
                     </div>
+                    {/* Hidden input to pass clean integer value into FormData */}
+                    <input type="hidden" name="depositAmount" value={depositAmount} />
+                    {/* Formatted display input with Indonesian dot thousand separator and no leading zero */}
                     <input
-                      type="number"
-                      name="depositAmount"
-                      min={0}
-                      value={depositAmount}
-                      onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
-                      placeholder="0"
-                      className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium"
+                      type="text"
+                      inputMode="numeric"
+                      value={depositDisplay}
+                      onChange={handleDepositChange}
+                      placeholder="0 (Contoh: 300.000)"
+                      className="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium text-slate-800"
                     />
                   </div>
 
