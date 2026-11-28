@@ -36,7 +36,8 @@ export async function createRenterAccount(formData: FormData) {
   const roomId = formData.get("roomId") as string | null;
   const startDate = formData.get("startDate") as string | null;
   const endDate = formData.get("endDate") as string | null;
-  const depositAmount = Number(formData.get("depositAmount")) || 0;
+  const rawDeposit = formData.get("depositAmount")?.toString().replace(/\D/g, "") || "0";
+  const depositAmount = Number(rawDeposit) || 0;
 
   if (!fullName || fullName.trim() === "") {
     return { error: "Nama lengkap anak kos wajib diisi." };
