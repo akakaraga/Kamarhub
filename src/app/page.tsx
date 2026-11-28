@@ -151,8 +151,7 @@ export default function Home() {
               href="/register"
               className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-blue-600/30 transition flex items-center gap-1.5"
             >
-              Daftar Gratis
-              <ArrowRight className="w-4 h-4" />
+              Daftar
             </Link>
           </div>
         </div>
