@@ -34,8 +34,21 @@ export default async function RentersPage() {
     .eq("status", "available")
     .order("room_number", { ascending: true });
 
+  // Fetch properties for property filter in onboarding modal
+  const { data: rawProperties } = await supabase
+    .from("properties")
+    .select("id, name")
+    .order("name", { ascending: true });
+
   const renters = (rawRenters || []) as RenterWithContract[];
   const availableRooms = (rawAvailableRooms || []) as any[];
+  const properties = (rawProperties || []) as { id: string; name: string }[];
 
-  return <RenterList renters={renters} availableRooms={availableRooms} />;
+  return (
+    <RenterList
+      renters={renters}
+      availableRooms={availableRooms}
+      properties={properties}
+    />
+  );
 }
