@@ -54,7 +54,20 @@ export function OnboardRenterModal({
   const [selectedRoomId, setSelectedRoomId] = useState<string>(
     availableRooms[0]?.id || ""
   );
-  const [depositAmount, setDepositAmount] = useState<number>(500000);
+  const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [depositDisplay, setDepositDisplay] = useState<string>("");
+
+  function handleDepositChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const cleanDigits = e.target.value.replace(/\D/g, "");
+    if (!cleanDigits) {
+      setDepositAmount(0);
+      setDepositDisplay("");
+      return;
+    }
+    const numericValue = parseInt(cleanDigits, 10);
+    setDepositAmount(numericValue);
+    setDepositDisplay(new Intl.NumberFormat("id-ID").format(numericValue));
+  }
 
   const selectedRoom = availableRooms.find((r) => r.id === selectedRoomId);
   const selectedRoomPrice = Number(selectedRoom?.base_price) || 0;
@@ -304,17 +317,24 @@ export function OnboardRenterModal({
 
             {/* Uang Deposit */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                Uang Jaminan / Deposit (Rp)
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Uang Jaminan / Deposit (Rp)
+                </label>
+                {depositAmount > 0 && (
+                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                    Rp {depositDisplay}
+                  </span>
+                )}
+              </div>
+              <input type="hidden" name="depositAmount" value={depositAmount} />
               <input
-                type="number"
-                name="depositAmount"
-                min={0}
-                step={50000}
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
-                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                type="text"
+                inputMode="numeric"
+                value={depositDisplay}
+                onChange={handleDepositChange}
+                placeholder="0 (Contoh: 300.000)"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-slate-800"
               />
             </div>
           </div>
